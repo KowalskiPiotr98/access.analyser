@@ -26,8 +26,8 @@ jobs:
     - name: Build
       run: dotnet build --no-restore -c RELEASE
     - name: UnitTests
-      run: dotnet test -c RELEASE --no-restore --no-build .\UnitTests\
+      run: dotnet test -c RELEASE --no-restore --no-build UnitTests/
     - name: IntegrationTests
-      run: dotnet test -c RELEASE --no-restore --no-build .\IntegrationTests\
+      run: dotnet test -c RELEASE --no-restore --no-build IntegrationTests/
     - name: LambdaTests
-      run: dotnet test -c RELEASE --no-restore --no-build .\Lambda\test\Lambda.Tests\
+      run: dotnet test -c RELEASE --no-restore --no-build Lambda/test/Lambda.Tests/
