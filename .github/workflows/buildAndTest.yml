@@ -1,0 +1,33 @@
+name: build and test
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  buildAndTest:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/cache@v1
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.201
+    - name: Install dependencies
+      run: dotnet restore --use-lock-file
+    - name: Build
+      run: dotnet build --no-restore -c Release
+    - name: UnitTests
+      run: dotnet test UnitTests -c Release --no-restore --no-build
+    - name: IntegrationTests
+      run: dotnet test IntegrationTests -c Release --no-restore --no-build
+    - name: LambdaTests
+      run: dotnet test Lambda/test/Lambda.Tests -c Release --no-restore --no-build
