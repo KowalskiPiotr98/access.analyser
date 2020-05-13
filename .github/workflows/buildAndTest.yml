@@ -24,10 +24,10 @@ jobs:
     - name: Install dependencies
       run: dotnet restore --use-lock-file
     - name: Build
-      run: dotnet build --no-restore -c RELEASE
+      run: dotnet build --no-restore -c Release
     - name: UnitTests
-      run: dotnet test UnitTests -c RELEASE --no-restore --no-build
+      run: dotnet test UnitTests -c Release --no-restore --no-build
     - name: IntegrationTests
-      run: dotnet test IntegrationTests -c RELEASE --no-restore --no-build
+      run: dotnet test IntegrationTests -c Release --no-restore --no-build
     - name: LambdaTests
-      run: dotnet test Lambda/test/Lambda.Tests -c RELEASE --no-restore --no-build
+      run: dotnet test Lambda/test/Lambda.Tests -c Release --no-restore --no-build
