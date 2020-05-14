@@ -31,6 +31,7 @@ namespace access.analyser
                  options.UseNpgsql (
                      Configuration.GetConnectionString ("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser> (options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole> ()
                 .AddEntityFrameworkStores<ApplicationDbContext> ();
             services.AddControllersWithViews ();
             services.AddRazorPages ();
@@ -65,6 +66,18 @@ namespace access.analyser
                      pattern: "{controller=Home}/{action=Index}/{id?}");
                  endpoints.MapRazorPages ();
              });
+
+            //Ensure Admin role is created on startup
+            using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory> ().CreateScope ();
+            using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>> ();
+            if (!roleManager.RoleExistsAsync ("Admin").Result)
+            {
+                var roleResult = roleManager.CreateAsync (new IdentityRole ("Admin")).Result;
+                if (!roleResult.Succeeded)
+                {
+                    throw new InvalidOperationException ("Unable to create role.");
+                }
+            }
         }
     }
 }
