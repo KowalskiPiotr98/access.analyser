@@ -30,7 +30,7 @@ namespace access.analyser
             services.AddDbContext<ApplicationDbContext> (options =>
                  options.UseNpgsql (
                      Configuration.GetConnectionString ("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser> (options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<IdentityUser> ()
                 .AddRoles<IdentityRole> ()
                 .AddEntityFrameworkStores<ApplicationDbContext> ();
             services.AddControllersWithViews ();
