@@ -6,3 +6,4 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage ("Globalization", "CA1303:Do not pass literals as localized parameters", Justification = "Nah, not doing that.", Scope = "module")]
+[assembly: SuppressMessage ("Usage", "CA2227:Collection properties should be read only", Justification = "Model relation requires public setter.", Scope = "member", Target = "~P:access.analyser.Models.Log.LogEntries")]
