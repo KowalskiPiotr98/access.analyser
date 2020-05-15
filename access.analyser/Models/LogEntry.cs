@@ -52,6 +52,7 @@ namespace access.analyser.Models
         /// Might sometimes be empty.
         /// Default field to put client's request in, when it's not a correct HTTP request.
         /// </remarks>
+        [Required]
         public string Resource { get; set; }
         /// <summary>
         /// Response code returned by the server

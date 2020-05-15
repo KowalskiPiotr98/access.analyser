@@ -10,7 +10,7 @@ using access.analyser.Data;
 namespace access.analyser.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200515074548_Log")]
+    [Migration("20200515184316_Log")]
     partial class Log
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -268,6 +268,7 @@ namespace access.analyser.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Resource")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ResponseCode")

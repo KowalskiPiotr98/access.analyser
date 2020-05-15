@@ -266,6 +266,7 @@ namespace access.analyser.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Resource")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("ResponseCode")

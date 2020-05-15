@@ -36,7 +36,7 @@ namespace access.analyser.Migrations
                     ClientIp = table.Column<string>(nullable: false),
                     RequestTime = table.Column<DateTime>(nullable: false),
                     Method = table.Column<int>(nullable: false),
-                    Resource = table.Column<string>(nullable: true),
+                    Resource = table.Column<string>(nullable: false),
                     ResponseCode = table.Column<int>(nullable: false),
                     UserAgent = table.Column<string>(nullable: true),
                     RawEntry = table.Column<string>(nullable: false)
