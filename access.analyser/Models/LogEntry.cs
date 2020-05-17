@@ -8,7 +8,7 @@ namespace access.analyser.Models
     {
         public enum RequestType
         {
-            other,
+            Other,
             GET,
             HEAD,
             POST,
