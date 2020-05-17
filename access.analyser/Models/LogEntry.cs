@@ -33,17 +33,20 @@ namespace access.analyser.Models
         /// IP from which the request was sent
         /// </summary>
         [Required]
+        [Display (Name = "Client IP")]
         public string ClientIp { get; set; }
         /// <summary>
         /// Date and time of the request
         /// </summary>
         [Required]
+        [Display (Name = "Request date")]
         [DataType (DataType.DateTime)]
         public DateTime RequestTime { get; set; }
         /// <summary>
         /// HTTP request method
         /// </summary>
         [Required]
+        [Display (Name = "HTTP method")]
         public RequestType Method { get; set; }
         /// <summary>
         /// Resource requested, together with query string
@@ -58,15 +61,18 @@ namespace access.analyser.Models
         /// Response code returned by the server
         /// </summary>
         [Required]
+        [Display (Name = "Response code")]
         public int ResponseCode { get; set; }
         /// <summary>
         /// User Agent string provided in the request
         /// </summary>
+        [Display (Name = "User agent")]
         public string UserAgent { get; set; }
         /// <summary>
         /// Raw line from the log
         /// </summary>
         [Required]
+        [Display (Name = "Raw log entry")]
         public string RawEntry { get; set; }
     }
 }

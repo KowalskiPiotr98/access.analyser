@@ -13,17 +13,16 @@
         <div class="form-group">
             <label for="timePeriod">Time period</label>
             <div class="form-control" style="border: none;">
-                <input type="datetime-local" id="dateFrom" name="dateFrom"> - <input type="datetime-local" id="dateTo" name="dateTo"><br />
-            </div>
-            <div class="form-control" style="border: none;">
-                <input type="checkbox" id="allAvailableCheckbox" name="allAvailableCheckbox" onchange="ChangeDateSelectionStatus();" />
-                <label for="allAvailableCheckbox">All available</label><br />
+                <input type="datetime-local" id="dateFrom" name="dateFrom" data-toggle="tooltip" title="Leave empty for unlimited"> 
+                - 
+                <input type="datetime-local" id="dateTo" name="dateTo" data-toggle="tooltip" title="Leave empty for unlimited">
+                <a href="#" onclick="ClearDate();">Clear</a>
             </div>
         </div>
         <div class="form-group">
             <label for="type">Request type</label>
             <select class="form-control" name="type" id="type" asp-items="Html.GetEnumSelectList<LogEntry.RequestType> ()">
-                <option selected value="-1">All</option>
+                <option selected value="">All</option>
             </select>
         </div>
         <div class="form-group">
@@ -49,17 +48,10 @@
 </div>
 
 <script>
-    function ChangeDateSelectionStatus() {
-        var checkbox = document.getElementById('allAvailableCheckbox');
+    function ClearDate() {
         var dateFrom = document.getElementById('dateFrom');
         var dateTo = document.getElementById('dateTo');
-        if (checkbox.checked) {
-            dateFrom.disabled = true;
-            dateTo.disabled = true;
-        }
-        else {
-            dateFrom.disabled = false;
-            dateTo.disabled = false;
-        }
+        dateFrom.value = '';
+        dateTo.value = '';
     }
 </script>
