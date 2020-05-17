@@ -1,0 +1,65 @@
+﻿
+@{
+    ViewData["Title"] = "Setup analysis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="row">Setup analysis</h1>
+<p class="row">
+    RESERVED FOR FUTURE ERROR MESSAGES
+</p>
+<div class="row">
+    <form asp-action="Analyse" method="post" asp-antiforgery="true">
+        <div class="form-group">
+            <label for="timePeriod">Time period</label>
+            <div class="form-control" style="border: none;">
+                <input type="datetime-local" id="dateFrom" name="dateFrom"> - <input type="datetime-local" id="dateTo" name="dateTo"><br />
+            </div>
+            <div class="form-control" style="border: none;">
+                <input type="checkbox" id="allAvailableCheckbox" name="allAvailableCheckbox" onchange="ChangeDateSelectionStatus();" />
+                <label for="allAvailableCheckbox">All available</label><br />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="type">Request type</label>
+            <select class="form-control" name="type" id="type" asp-items="Html.GetEnumSelectList<LogEntry.RequestType> ()">
+                <option selected value="-1">All</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="ip">Request from (IP)</label>
+            <input class="form-control" type="text" name="ip" id="ip" placeholder="8.8.8.8 1.2.3.4" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="resource">Requested resource</label>
+            <input class="form-control" type="text" name="resource" id="resource" placeholder="/ /index.html" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="response">Response code</label>
+            <input class="form-control" type="text" name="response" id="response" placeholder="200 404 500" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="agent">User agent (contains)</label>
+            <input class="form-control" type="text" name="agent" id="agent" placeholder="&quot;Windows NT 10.0&quot; &quot;Windows NT 6.1&quot;" data-toggle="tooltip" title="Leave empty for no filter. Enclose each entry with quotation marks. This filter will check whether user agent contains any of the entries provided." />
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Search"/>
+        </div>
+    </form>
+</div>
+
+<script>
+    function ChangeDateSelectionStatus() {
+        var checkbox = document.getElementById('allAvailableCheckbox');
+        var dateFrom = document.getElementById('dateFrom');
+        var dateTo = document.getElementById('dateTo');
+        if (checkbox.checked) {
+            dateFrom.disabled = true;
+            dateTo.disabled = true;
+        }
+        else {
+            dateFrom.disabled = false;
+            dateTo.disabled = false;
+        }
+    }
+</script>
