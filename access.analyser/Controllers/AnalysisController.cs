@@ -2,8 +2,10 @@
 using access.analyser.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -29,11 +31,13 @@ namespace access.analyser.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Analyse (DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent)
+        public async Task<IActionResult> Analyse (DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent, LogEntry.EntrySortOrder? sortBy, string sortOrder)
         {
             var list = context.LogEntries.Include (l => l.Log).OrderByDescending (l => l.RequestTime).Select (l => l);
             var userId = User.FindFirstValue (ClaimTypes.NameIdentifier);
-            return View (await LogEntry.FilterEntries (list, User.IsInRole ("Admin"), userId, dateFrom, dateTo, type, ip, resource, response, agent));
+            var filtered = LogEntry.FilterEntries (list, User.IsInRole ("Admin"), userId, dateFrom, dateTo, type, ip, resource, response, agent);
+            var sorted = LogEntry.SortEntries (await filtered, sortBy ?? LogEntry.EntrySortOrder.Date, sortOrder == "descending");
+            return View (sorted);
         }
     }
 }

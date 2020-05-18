@@ -25,6 +25,15 @@ namespace access.analyser.Models
             PATCH
         }
 
+        public enum EntrySortOrder
+        {
+            Date,
+            Type,
+            Response,
+            Resource,
+            Agent
+        }
+
         [Key]
         [DatabaseGenerated (DatabaseGeneratedOption.Identity)]
         public string Id { get; set; }
@@ -80,7 +89,7 @@ namespace access.analyser.Models
         [Display (Name = "Raw log entry")]
         public string RawEntry { get; set; }
 
-        public static async Task<List<LogEntry>> FilterEntries (IQueryable<LogEntry> list, bool isAdmin, string userId, DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent)
+        internal static async Task<IQueryable<LogEntry>> FilterEntries (IQueryable<LogEntry> list, bool isAdmin, string userId, DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent)
         {
             if (!isAdmin)
             {
@@ -133,7 +142,44 @@ namespace access.analyser.Models
                 var listTemp = from l in await listTempAsync where agents.Any (a => l.UserAgent.Contains (a)) select l;
                 list = listTemp.AsQueryable ();
             }
-            return list.ToList ();
+            return list;
+        }
+
+        internal static IQueryable<LogEntry> SortEntries (IQueryable<LogEntry> list, EntrySortOrder order, bool descending)
+        {
+            if (descending)
+            {
+                switch (order)
+                {
+                    case EntrySortOrder.Date:
+                        return from l in list orderby l.RequestTime descending select l;
+                    case EntrySortOrder.Type:
+                        return from l in list orderby l.Method descending select l;
+                    case EntrySortOrder.Response:
+                        return from l in list orderby l.ResponseCode descending select l;
+                    case EntrySortOrder.Resource:
+                        return from l in list orderby l.Resource descending select l;
+                    case EntrySortOrder.Agent:
+                        return from l in list orderby l.UserAgent descending select l;
+                }
+            }
+            else
+            {
+                switch (order)
+                {
+                    case EntrySortOrder.Date:
+                        return from l in list orderby l.RequestTime select l;
+                    case EntrySortOrder.Type:
+                        return from l in list orderby l.Method select l;
+                    case EntrySortOrder.Response:
+                        return from l in list orderby l.ResponseCode select l;
+                    case EntrySortOrder.Resource:
+                        return from l in list orderby l.Resource select l;
+                    case EntrySortOrder.Agent:
+                        return from l in list orderby l.UserAgent select l;
+                }
+            }
+            throw new InvalidOperationException ("Action for desired SortOrder was not found.");
         }
     }
 }
