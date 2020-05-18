@@ -31,29 +31,9 @@ namespace access.analyser.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Analyse (DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent)
         {
-            var list = context.LogEntries.Include (l => l.Log).OrderBy (l => l.RequestTime).Select (l => l);
+            var list = context.LogEntries.Include (l => l.Log).OrderByDescending (l => l.RequestTime).Select (l => l);
             var userId = User.FindFirstValue (ClaimTypes.NameIdentifier);
-            if (!User.IsInRole ("Admin"))
-            {
-                list = from l in list where l.Log.UserId == userId select l;
-            }
-            if (dateFrom.HasValue)
-            {
-                list = from l in list where l.RequestTime >= dateFrom.Value select l;
-            }
-            if (dateTo.HasValue)
-            {
-                list = from l in list where l.RequestTime <= dateTo.Value select l;
-            }
-            if (type.HasValue)
-            {
-                list = from l in list where l.Method == type.Value select l;
-            }
-            if (ip != null)
-            {
-
-            }
-            return View (await list.ToListAsync ());
+            return View (await LogEntry.FilterEntries (list, User.IsInRole ("Admin"), userId, dateFrom, dateTo, type, ip, resource, response, agent));
         }
     }
 }

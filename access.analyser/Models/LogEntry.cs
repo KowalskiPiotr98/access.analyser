@@ -1,6 +1,11 @@
-﻿using System;
+﻿using access.analyser.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace access.analyser.Models
 {
@@ -74,5 +79,61 @@ namespace access.analyser.Models
         [Required]
         [Display (Name = "Raw log entry")]
         public string RawEntry { get; set; }
+
+        public static async Task<List<LogEntry>> FilterEntries (IQueryable<LogEntry> list, bool isAdmin, string userId, DateTime? dateFrom, DateTime? dateTo, LogEntry.RequestType? type, string ip, string resource, string response, string agent)
+        {
+            if (!isAdmin)
+            {
+                list = from l in list where l.Log.UserId == userId select l;
+            }
+            if (dateFrom.HasValue)
+            {
+                list = from l in list where l.RequestTime >= dateFrom.Value select l;
+            }
+            if (dateTo.HasValue)
+            {
+                list = from l in list where l.RequestTime <= dateTo.Value select l;
+            }
+            if (type.HasValue)
+            {
+                list = from l in list where l.Method == type.Value select l;
+            }
+            if (ip != null)
+            {
+                ip = ip.Trim ();
+                var ips = ip.Split (" ");
+                list = from l in list where ips.Contains (l.ClientIp) select l;
+            }
+            if (resource != null)
+            {
+                resource = resource.Trim ();
+                var resources = resource.Split (" ");
+                list = from l in list where resources.Contains (l.Resource) select l;
+            }
+            if (response != null)
+            {
+                response = response.Trim ();
+                var responses = response.Split (" ");
+                list = from l in list where responses.Contains (l.ResponseCode.ToString ()) select l;
+            }
+            if (agent != null)
+            {
+                agent = agent.Trim ();
+                var agents = new List<string> ();
+                int index = agent.IndexOf ('\"');
+                var listTempAsync = list.ToListAsync ();
+                while (index >= 0)
+                {
+                    agent = agent.Remove (0, index + 1);
+                    var endIndex = agent.IndexOf ('\"');
+                    agents.Add (agent.Substring (0, endIndex));
+                    agent = agent.Remove (0, endIndex + 1);
+                    index = agent.IndexOf ('\"');
+                }
+                var listTemp = from l in await listTempAsync where agents.Any (a => l.UserAgent.Contains (a)) select l;
+                list = listTemp.AsQueryable ();
+            }
+            return list.ToList ();
+        }
     }
 }
