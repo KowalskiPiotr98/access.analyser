@@ -25,19 +25,19 @@
         <tbody>
             <tr>
                 <td>
-                    @foreach (var ip in Model.GroupBy (l => l.ClientIp).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    @foreach (var ip in LogEntry.GetTopIPs (Model))
                     {
                         <div>@ip.Key: @ip.Count()</div>
                     }
                 </td>
                 <td>
-                    @foreach (var method in Model.GroupBy (l => l.Method).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    @foreach (var method in LogEntry.GetTopMethods (Model))
                     {
                         <div>@method.Key: @method.Count()</div>
                     }
                 </td>
                 <td>
-                    @foreach (var response in Model.GroupBy (l => l.ResponseCode).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    @foreach (var response in LogEntry.GetTopResponses (Model))
                     {
                         <div>@response.Key: @response.Count()</div>
                     }
@@ -48,14 +48,14 @@
 </div>
 <div>
     <h5 style="text-align:center;">Resources</h5>
-    @foreach (var resource in Model.GroupBy (l => l.Resource).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+    @foreach (var resource in LogEntry.GetTopResources (Model))
     {
         <div>@resource.Key: @resource.Count()</div>
     }
 </div>
 <div>
     <h5 style="text-align:center;">User agents</h5>
-    @foreach (var agent in Model.GroupBy (l => l.UserAgent).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+    @foreach (var agent in LogEntry.GetTopAgents (Model))
     {
         <div>@agent.Key: @agent.Count()</div>
     }

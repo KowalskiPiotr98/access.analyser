@@ -122,7 +122,15 @@ namespace access.analyser.Models
             {
                 response = response.Trim ();
                 var responses = response.Split (" ");
-                list = from l in list where responses.Contains (l.ResponseCode.ToString ()) select l;
+                var responsesInt = new List<int> (responses.Length);
+                foreach (var item in responses)
+                {
+                    if (Int32.TryParse (item, out int result))
+                    {
+                        responsesInt.Add (result);
+                    }
+                }
+                list = from l in list where responsesInt.Contains (l.ResponseCode) select l;
             }
             if (agent != null)
             {
@@ -180,5 +188,11 @@ namespace access.analyser.Models
             }
             throw new InvalidOperationException ("Action for desired SortOrder was not found.");
         }
+
+        public static IEnumerable<IGrouping<string, LogEntry>> GetTopIPs (IEnumerable<LogEntry> list, int limit = 10) => list.GroupBy (l => l.ClientIp).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (limit);
+        public static IEnumerable<IGrouping<RequestType, LogEntry>> GetTopMethods (IEnumerable<LogEntry> list, int limit = 10) => list.GroupBy (l => l.Method).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (limit);
+        public static IEnumerable<IGrouping<int, LogEntry>> GetTopResponses (IEnumerable<LogEntry> list, int limit = 10) => list.GroupBy (l => l.ResponseCode).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (limit);
+        public static IEnumerable<IGrouping<string, LogEntry>> GetTopResources (IEnumerable<LogEntry> list, int limit = 10) => list.GroupBy (l => l.Resource).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (limit);
+        public static IEnumerable<IGrouping<string, LogEntry>> GetTopAgents (IEnumerable<LogEntry> list, int limit = 10) => list.GroupBy (l => l.UserAgent).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (limit);
     }
 }
