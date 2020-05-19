@@ -6,57 +6,109 @@
 }
 
 <h1>Analysis</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ClientIp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RequestTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Method)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Resource)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ResponseCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserAgent)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr style="border-bottom: 0;">
-            <td>
-                @Html.DisplayFor(modelItem => item.ClientIp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RequestTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Method)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Resource)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ResponseCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserAgent)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="6" style="border: none;">
-                @Html.DisplayFor(modelItem => item.RawEntry)
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="row">
+    <table class="table">
+        <caption style="caption-side:top; text-align:center;"><h4>Most popular</h4></caption>
+        <thead>
+            <tr>
+                <th>
+                    IPs
+                </th>
+                <th>
+                    Methods
+                </th>
+                <th>
+                    Responses
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    @foreach (var ip in Model.GroupBy (l => l.ClientIp).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    {
+                        <div>@ip.Key: @ip.Count()</div>
+                    }
+                </td>
+                <td>
+                    @foreach (var method in Model.GroupBy (l => l.Method).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    {
+                        <div>@method.Key: @method.Count()</div>
+                    }
+                </td>
+                <td>
+                    @foreach (var response in Model.GroupBy (l => l.ResponseCode).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+                    {
+                        <div>@response.Key: @response.Count()</div>
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div>
+    <h5 style="text-align:center;">Resources</h5>
+    @foreach (var resource in Model.GroupBy (l => l.Resource).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+    {
+        <div>@resource.Key: @resource.Count()</div>
+    }
+</div>
+<div>
+    <h5 style="text-align:center;">User agents</h5>
+    @foreach (var agent in Model.GroupBy (l => l.UserAgent).OrderByDescending (l => l.Count ()).ThenBy (l => l.Key).Take (10))
+    {
+        <div>@agent.Key: @agent.Count()</div>
+    }
+</div>
+<div class="row">
+    <table class="table">
+        <caption style="caption-side:top; text-align:center;"><h4>Found entries</h4></caption>
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ClientIp)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RequestTime)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Method)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Resource)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ResponseCode)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.UserAgent)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ClientIp)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.RequestTime)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Method)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Resource)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ResponseCode)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UserAgent)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
