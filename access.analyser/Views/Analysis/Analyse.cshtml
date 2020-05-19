@@ -5,7 +5,7 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Analyse</h1>
+<h1>Analysis</h1>
 
 <table class="table">
     <thead>
@@ -28,12 +28,11 @@
             <th>
                 @Html.DisplayNameFor(model => model.UserAgent)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr style="border-bottom: 0;">
             <td>
                 @Html.DisplayFor(modelItem => item.ClientIp)
             </td>
@@ -52,8 +51,10 @@
             <td>
                 @Html.DisplayFor(modelItem => item.UserAgent)
             </td>
-            <td>
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+        </tr>
+        <tr>
+            <td colspan="6" style="border: none;">
+                @Html.DisplayFor(modelItem => item.RawEntry)
             </td>
         </tr>
 }
