@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 using Amazon.Lambda.Core;
 
@@ -10,9 +6,8 @@ using Amazon.Lambda.Core;
 
 namespace Lambda
 {
-    public class Function
+    public class LambdaFunction
     {
-        
         /// <summary>
         /// A simple function that takes a string and does a ToUpper
         /// </summary>
@@ -21,7 +16,10 @@ namespace Lambda
         /// <returns></returns>
         public string FunctionHandler(string input, ILambdaContext context)
         {
-            return input?.ToUpper();
+            return input;
         }
+
+        
+
     }
 }
