@@ -10,7 +10,7 @@ using Amazon.Lambda.Core;
 
 namespace Lambda
 {
-    public class Function
+    public class LambdaFunction
     {
         
         /// <summary>
@@ -21,7 +21,8 @@ namespace Lambda
         /// <returns></returns>
         public string FunctionHandler(string input, ILambdaContext context)
         {
-            return input?.ToUpper();
+            return input;
         }
+
     }
 }
