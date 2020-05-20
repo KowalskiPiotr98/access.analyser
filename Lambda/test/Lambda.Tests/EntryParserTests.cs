@@ -1,34 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 using Xunit;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.TestUtilities;
-
-using Lambda;
 using Lambda.Models;
-using System.Globalization;
-using System.Runtime.Serialization;
-using System.Runtime.ConstrainedExecution;
 using System.Collections;
 
 namespace Lambda.Tests
 {
-    public class FunctionTest
+    public class EntryParserTests
     {
-        //[Fact]
-        //public void TestToUpperFunction()
-        //{
-
-        //    // Invoke the lambda function and confirm the string was upper cased.
-        //    var function = new LambdaFunction();
-        //    var context = new TestLambdaContext();
-        //    var upperCase = function.FunctionHandler("hello world", context);
-
-        //    Assert.Equal("HELLO WORLD", upperCase);
-        //}
         [Theory]
         [InlineData(
             "208.80.194.27 - - [15/May/2020:03:34:59 +0200] \"GET /bins/hoho.mpsl HTTP/1.0\"" +
@@ -44,7 +23,7 @@ namespace Lambda.Tests
             )]
         public void TestProcessLogLineMatchIP(string logLine, string expectedIP)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedIP,logEntry.ClientIp);
         }
         [Theory]
@@ -63,7 +42,7 @@ namespace Lambda.Tests
 
         public void TestProcessLogLineMatchResponseCode(string logLine, int expectedResponseCode)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedResponseCode, logEntry.ResponseCode);
         }
         [Theory]
@@ -80,7 +59,7 @@ namespace Lambda.Tests
 
         public void TestProcessLogLineMatchRawEntry(string logLine)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(logLine, logEntry.RawEntry);
         }
         [Theory]
@@ -99,7 +78,7 @@ namespace Lambda.Tests
 
         public void TestProcessLogLineMatchUserAgent(string logLine, string expectedUserAgent)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedUserAgent, logEntry.UserAgent);
         }
         [Theory]
@@ -118,7 +97,7 @@ namespace Lambda.Tests
 
         public void TestProcessLogLineMatchMethod(string logLine, LogEntry.RequestType expectedMethod)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedMethod, logEntry.Method);
         }
         [Theory]
@@ -139,7 +118,7 @@ namespace Lambda.Tests
 
         public void TestProcessLogLineMatchResource(string logLine, string expectedResource)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedResource, logEntry.Resource);
         }
 
@@ -171,7 +150,7 @@ namespace Lambda.Tests
         [ClassData(typeof(TestData))]
         public void TestProcessLogLineMatchRequestTime(string logLine, DateTime expectedRequestTime)
         {
-            var logEntry = LambdaFunction.ProcessLogLine(logLine);
+            var logEntry = EntryParser.ProcessLogLine(logLine);
             Assert.Equal(expectedRequestTime, logEntry.RequestTime);
         }
     }
