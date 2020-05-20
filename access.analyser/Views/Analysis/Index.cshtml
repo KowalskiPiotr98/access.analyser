@@ -1,0 +1,66 @@
+﻿
+@{
+    ViewData["Title"] = "Setup analysis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1 class="row">Setup analysis</h1>
+
+<div class="row">
+    <form asp-action="Analyse" method="post" asp-antiforgery="true">
+        <div class="form-group">
+            <label for="timePeriod">Time period</label>
+            <div class="form-control" style="border: none;">
+                <input type="datetime-local" id="dateFrom" name="dateFrom" data-toggle="tooltip" title="Leave empty for unlimited">
+                -
+                <input type="datetime-local" id="dateTo" name="dateTo" data-toggle="tooltip" title="Leave empty for unlimited">
+                <a href="#" onclick="ClearDate();">Clear</a>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="type">Request type</label>
+            <select class="form-control" name="type" id="type" asp-items="Html.GetEnumSelectList<LogEntry.RequestType> ()">
+                <option selected value="">All</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="ip">Request from (IP)</label>
+            <input class="form-control" type="text" name="ip" id="ip" placeholder="8.8.8.8 1.2.3.4" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="resource">Requested resource</label>
+            <input class="form-control" type="text" name="resource" id="resource" placeholder="/ /index.html" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="response">Response code</label>
+            <input class="form-control" type="text" name="response" id="response" placeholder="200 404 500" data-toggle="tooltip" title="Leave empty for no filter. Separate multiple entries with a space." />
+        </div>
+        <div class="form-group">
+            <label for="agent">User agent (contains)</label>
+            <input class="form-control" type="text" name="agent" id="agent" placeholder="&quot;Windows NT 10.0&quot; &quot;Windows NT 6.1&quot;" data-toggle="tooltip" title="Leave empty for no filter. Enclose each entry with quotation marks. This filter will check whether user agent contains any of the entries provided." />
+        </div>
+        <div class="form-group">
+            <label for="sortBy">Sort by</label>
+            <select class="form-control" name="sortBy" id="sortBy" asp-items="Html.GetEnumSelectList<LogEntry.EntrySortOrder> ()">
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="radio" id="sortDescending" name="sortOrder" value="descending" checked/>
+            <label for="sortDescending">Descending</label>
+            <input type="radio" id="sortAscending" name="sortOrder" value="ascending" />
+            <label for="sortAscending">Ascending</label>
+        </div>
+        <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Search" />
+        </div>
+    </form>
+</div>
+
+<script>
+    function ClearDate() {
+        var dateFrom = document.getElementById('dateFrom');
+        var dateTo = document.getElementById('dateTo');
+        dateFrom.value = '';
+        dateTo.value = '';
+    }
+</script>
