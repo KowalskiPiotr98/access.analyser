@@ -11,7 +11,7 @@ namespace access.analyser.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20200515184316_Log")]
-    partial class Log
+    partial class LogMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

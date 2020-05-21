@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace access.analyser.Migrations
 {
-    public partial class Log : Migration
+    public partial class LogMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
