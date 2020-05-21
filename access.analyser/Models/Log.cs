@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace access.analyser.Models
 {
@@ -27,8 +28,19 @@ namespace access.analyser.Models
         /// </summary>
         [Required]
         [DataType (DataType.DateTime)]
+        [Display (Name = "Upload date")]
         public DateTime UploadDate { get; set; }
 
         public List<LogEntry> LogEntries { get; set; }
+
+        internal static IQueryable<Log> SelectByDate (IQueryable<Log> list, DateTime date) => from l in list where l.UploadDate == date select l;
+        internal static IQueryable<Log> GetAuthorisedLogs (IQueryable<Log> list, string userId, bool isAdmin)
+        {
+            if (isAdmin)
+            {
+                return list;
+            }
+            return from l in list where l.UserId == userId select l;
+        }
     }
 }
