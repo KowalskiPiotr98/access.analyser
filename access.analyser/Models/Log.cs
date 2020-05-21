@@ -33,7 +33,7 @@ namespace access.analyser.Models
 
         public List<LogEntry> LogEntries { get; set; }
 
-        internal static IQueryable<Log> SelectByDate (IQueryable<Log> list, DateTime date) => from l in list where l.UploadDate == date select l;
+        internal static IQueryable<Log> SelectByDate (IQueryable<Log> list, DateTime date) => from l in list where l.UploadDate.Date == date.Date select l;
         internal static IQueryable<Log> GetAuthorisedLogs (IQueryable<Log> list, string userId, bool isAdmin)
         {
             if (isAdmin)

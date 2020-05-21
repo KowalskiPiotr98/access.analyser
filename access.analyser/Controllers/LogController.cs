@@ -18,6 +18,7 @@ namespace access.analyser.Controllers
             this.context = context;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(DateTime? uploadedOn)
         {
             var list = from l in context.Logs select l;
@@ -26,6 +27,7 @@ namespace access.analyser.Controllers
             if (uploadedOn.HasValue)
             {
                 list = Log.SelectByDate (list, uploadedOn.Value);
+                ViewData ["UploadedOn"] = uploadedOn.Value.Date.ToString ("yyyy-MM-dd");
             }
             return View (await list.ToListAsync ());
         }
