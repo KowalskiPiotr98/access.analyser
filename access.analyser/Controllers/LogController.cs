@@ -2,6 +2,7 @@
 using access.analyser.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -12,10 +13,12 @@ namespace access.analyser.Controllers
     public class LogController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly IConfiguration config;
 
-        public LogController (ApplicationDbContext context)
+        public LogController (ApplicationDbContext context, IConfiguration config)
         {
             this.context = context;
+            this.config = config;
         }
 
         [HttpGet]
@@ -30,6 +33,38 @@ namespace access.analyser.Controllers
                 ViewData ["UploadedOn"] = uploadedOn.Value.Date.ToString ("yyyy-MM-dd");
             }
             return View (await list.ToListAsync ());
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete (string id)
+        {
+            if (id is null)
+            {
+                return NotFound ();
+            }
+            var log = await context.Logs.FindAsync (id);
+            return log is null ? NotFound () : (IActionResult)View (log);
+        }
+
+        [HttpPost, ActionName ("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed (string id)
+        {
+            if (id is null)
+            {
+                return NotFound ();
+            }
+            var log = await context.Logs.FindAsync (id);
+            if (log is null)
+            {
+                return NotFound ();
+            }
+            await log.DeleteS3Object (config.GetConnectionString ("S3BucketName"));
+            var entries = from l in context.LogEntries where l.LogId == id select l;
+            context.LogEntries.RemoveRange (entries);
+            context.Logs.Remove (log);
+            await context.SaveChangesAsync ();
+            return RedirectToAction (nameof (Index));
         }
     }
 }

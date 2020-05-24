@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Amazon;
+using Amazon.S3;
+using Amazon.S3.Model;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace access.analyser.Models
 {
@@ -30,6 +34,11 @@ namespace access.analyser.Models
         [DataType (DataType.DateTime)]
         [Display (Name = "Upload date")]
         public DateTime UploadDate { get; set; }
+        /// <summary>
+        /// S3 bucket object key
+        /// </summary>
+        [Required]
+        public string S3ObjectKey { get; set; }
 
         public List<LogEntry> LogEntries { get; set; }
 
@@ -41,6 +50,17 @@ namespace access.analyser.Models
                 return list;
             }
             return from l in list where l.UserId == userId select l;
+        }
+
+        internal virtual async Task DeleteS3Object (string bucketName)
+        {
+            using var client = new AmazonS3Client (RegionEndpoint.USEast1);
+            var delObject = new DeleteObjectRequest ()
+            {
+                BucketName = bucketName,
+                Key = S3ObjectKey
+            };
+            _ = await client.DeleteObjectAsync (delObject);
         }
     }
 }
