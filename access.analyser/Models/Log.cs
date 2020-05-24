@@ -2,6 +2,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -42,6 +43,8 @@ namespace access.analyser.Models
 
         public List<LogEntry> LogEntries { get; set; }
 
+        private static readonly RegionEndpoint region = RegionEndpoint.USEast1;
+
         internal static IQueryable<Log> SelectByDate (IQueryable<Log> list, DateTime date) => from l in list where l.UploadDate.Date == date.Date select l;
         internal static IQueryable<Log> GetAuthorisedLogs (IQueryable<Log> list, string userId, bool isAdmin)
         {
@@ -54,13 +57,36 @@ namespace access.analyser.Models
 
         internal virtual async Task DeleteS3Object (string bucketName)
         {
-            using var client = new AmazonS3Client (RegionEndpoint.USEast1);
+            using var client = new AmazonS3Client (region);
             var delObject = new DeleteObjectRequest ()
             {
                 BucketName = bucketName,
                 Key = S3ObjectKey
             };
             _ = await client.DeleteObjectAsync (delObject);
+        }
+
+        internal virtual async Task<FileStreamResult> GetFileStream (string bucketName)
+        {
+            using var client = new AmazonS3Client (region);
+            var getObject = new GetObjectRequest ()
+            {
+                BucketName = bucketName,
+                Key = S3ObjectKey
+            };
+            try
+            {
+                var response = await client.GetObjectAsync (getObject);
+                return new FileStreamResult (response.ResponseStream, new Microsoft.Net.Http.Headers.MediaTypeHeaderValue ("text/plain"))
+                {
+                    FileDownloadName = S3ObjectKey
+                };
+            }
+            catch (AmazonS3Exception)
+            {
+                return null;
+            }
+
         }
     }
 }
