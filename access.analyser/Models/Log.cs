@@ -24,11 +24,6 @@ namespace access.analyser.Models
         public string UserId { get; set; }
         public IdentityUser User { get; set; }
         /// <summary>
-        /// URL to log in S3 bucket
-        /// </summary>
-        [Required]
-        public Uri LogS3Url { get; set; }
-        /// <summary>
         /// Time when log was uploaded
         /// </summary>
         [Required]

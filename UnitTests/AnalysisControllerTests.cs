@@ -35,7 +35,6 @@ namespace UnitTests
                 Id = mockLogId,
                 UploadDate = DateTime.Today,
                 UserId = mockUserId,
-                LogS3Url = mockS3Url,
                 S3ObjectKey = ""
             });
             context.LogEntries.AddRange (new LogEntry []

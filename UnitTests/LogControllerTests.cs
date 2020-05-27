@@ -31,9 +31,9 @@ namespace UnitTests
                 Id = mockUserId
             });
             context.Logs.AddRange (
-                new Log () { Id = mockLogId [0], UploadDate = DateTime.Today, UserId = mockUserId, LogS3Url = mockS3Url, S3ObjectKey = "" },
-                new Log () { Id = mockLogId [1], UploadDate = DateTime.Today.AddDays (-1), UserId = mockUserId, LogS3Url = mockS3Url, S3ObjectKey = "" },
-                new Log () { Id = mockLogId [2], UploadDate = DateTime.Today, UserId = mockUserId, LogS3Url = mockS3Url, S3ObjectKey = "" }
+                new Log () { Id = mockLogId [0], UploadDate = DateTime.Today, UserId = mockUserId, S3ObjectKey = "" },
+                new Log () { Id = mockLogId [1], UploadDate = DateTime.Today.AddDays (-1), UserId = mockUserId, S3ObjectKey = "" },
+                new Log () { Id = mockLogId [2], UploadDate = DateTime.Today, UserId = mockUserId, S3ObjectKey = "" }
                 );
             context.LogEntries.AddRange (new LogEntry []
             {
