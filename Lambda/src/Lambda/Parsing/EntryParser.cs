@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Lambda
+namespace Lambda.Parsing
 {
     public static class EntryParser
     {

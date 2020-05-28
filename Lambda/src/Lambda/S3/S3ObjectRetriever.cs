@@ -7,7 +7,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Lambda
+namespace Lambda.S3
 {
     class S3ObjectRetriever
     {

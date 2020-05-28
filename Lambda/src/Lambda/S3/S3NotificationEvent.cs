@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Linq;
 
-namespace Lambda
+namespace Lambda.S3
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2227:Collection properties should be read only",
         Justification = "Needed for deserialization")]
