@@ -16,16 +16,16 @@ namespace Lambda.Models
         [Required]
         public string UserId { get; set; }
         /// <summary>
-        /// URL to log in S3 bucket
-        /// </summary>
-        [Required]
-        public Uri LogS3Url { get; set; }
-        /// <summary>
         /// Time when log was uploaded
         /// </summary>
         [Required]
         [DataType (DataType.DateTime)]
         public DateTime UploadDate { get; set; }
+        /// <summary>
+        /// S3 bucket object key
+        /// </summary>
+        [Required]
+        public string S3ObjectKey { get; set; }
 
         public List<LogEntry> LogEntries { get; set; }
     }
