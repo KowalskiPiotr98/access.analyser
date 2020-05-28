@@ -2,6 +2,7 @@
 using Amazon.S3;
 using Amazon.S3.Model;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -29,11 +30,16 @@ namespace Lambda.S3
                 BucketName = bucketName,
                 Key = keyName
             };
-            using GetObjectResponse response = await client.GetObjectAsync(request).ConfigureAwait(true);
+            using GetObjectResponse response = await client.GetObjectAsync(request).ConfigureAwait(false);
             using Stream responseStream = response.ResponseStream;
             using StreamReader reader = new StreamReader(responseStream);
-            while(!reader.EndOfStream)
-                yield return reader.ReadLine();
+            List<string> res = new List<string>();
+            while (!reader.EndOfStream)
+                res.Add(reader.ReadLine());
+            foreach(var el in res)
+            {
+                yield return el;
+            }
         }
     }
 }

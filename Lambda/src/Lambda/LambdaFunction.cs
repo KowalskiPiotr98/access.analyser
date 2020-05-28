@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Lambda.S3;
 using Lambda.Models;
 using Lambda.Parsing;
+using Lambda.Database;
+using System.Linq;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -21,22 +23,37 @@ namespace Lambda
         /// </summary>
         /// <param name="input"></param>
         /// <param name="context"></param>
-        public async Task<string> FunctionHandler(S3NotificationEvent input, ILambdaContext context)
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter",
+            Justification = "Necesarry for lambda to work")]
+        public void FunctionHandler(S3NotificationEvent input, ILambdaContext context)
+        {
+            HandlerAsync(input).Wait();
+        }
+        private async Task HandlerAsync(S3NotificationEvent input)
         {
             var data = input?.GetFileData();
             var retriever = new S3ObjectRetriever(data.Value.bucketName, data.Value.objectsKey,
                 RegionEndpoint.GetBySystemName(data.Value.region));
-            StringBuilder result = new StringBuilder();
-            await foreach (string line in retriever.GetObjectDataAsync())
+            using var connection = new DbConnection();
+            await connection.GetConnection().OpenAsync().ConfigureAwait(false);
+            var logSaver = new LogSaver(connection.GetConnection());
+            string logId = await logSaver.GetAssociatedLogIdAsync(data.Value.objectsKey).ConfigureAwait(false);
+            if (!String.IsNullOrEmpty(logId))
             {
-                var logEntry = EntryParser.ProcessLogLine(line);
-                result.Append($"log entry: {logEntry.ClientIp}, {logEntry.Resource}, {logEntry.ResponseCode}\n");
+                Console.WriteLine($"Found logId={logId}");
+                var entries = retriever.GetObjectDataAsync().Select(
+                    logLine => { Console.WriteLine(logLine.Substring(0, 10)); return EntryParser.ProcessLogLine(logLine); });
+                await logSaver.SaveLogsAsync(logId, entries).ConfigureAwait(false);
             }
-            return result.ToString();
-            
+            else
+            {
+                throw new Exception($"Log with given object name " +
+                    $"({data.Value.objectsKey}) has no associated record in database");
+            }
         }
 
-        
+
+
 
     }
 }
