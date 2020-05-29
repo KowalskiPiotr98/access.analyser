@@ -20,15 +20,6 @@ namespace Lambda.Models
             PATCH
         }
 
-        [Key]
-        [DatabaseGenerated (DatabaseGeneratedOption.Identity)]
-        public string Id { get; set; }
-        /// <summary>
-        /// Reference to log file from which this entry was read
-        /// </summary>
-        [Required]
-        public string LogId { get; set; }
-        public Log Log { get; set; }
         /// <summary>
         /// IP from which the request was sent
         /// </summary>
@@ -38,7 +29,6 @@ namespace Lambda.Models
         /// Date and time of the request
         /// </summary>
         [Required]
-        [DataType (DataType.DateTime)]
         public DateTime RequestTime { get; set; }
         /// <summary>
         /// HTTP request method
