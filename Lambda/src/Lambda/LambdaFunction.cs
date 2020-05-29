@@ -32,7 +32,7 @@ namespace Lambda
         private async Task HandlerAsync(S3NotificationEvent input)
         {
             var data = input?.GetFileData();
-            var retriever = new S3ObjectRetriever(data.Value.bucketName, data.Value.objectsKey,
+            var retriever = new S3ObjectRetriever(data.Value.objectsKey,
                 RegionEndpoint.GetBySystemName(data.Value.region));
             using var connection = new DbConnection();
             await connection.GetConnection().OpenAsync().ConfigureAwait(false);
@@ -40,9 +40,8 @@ namespace Lambda
             string logId = await logSaver.GetAssociatedLogIdAsync(data.Value.objectsKey).ConfigureAwait(false);
             if (!String.IsNullOrEmpty(logId))
             {
-                Console.WriteLine($"Found logId={logId}");
                 var entries = retriever.GetObjectDataAsync().Select(
-                    logLine => { Console.WriteLine(logLine.Substring(0, 10)); return EntryParser.ProcessLogLine(logLine); });
+                    logLine => EntryParser.ProcessLogLine(logLine));
                 await logSaver.SaveLogsAsync(logId, entries).ConfigureAwait(false);
             }
             else

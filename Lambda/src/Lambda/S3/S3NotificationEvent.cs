@@ -12,10 +12,10 @@ namespace Lambda.S3
         Justification = "Needed for deserialization")]
     public class S3NotificationEvent
     {
-        public (string bucketName, string objectsKey, string region) GetFileData()
+        public (string objectsKey, string region) GetFileData()
         {
             var record = Records.First();
-            return (record.S3.ObjectsBucket.Name, record.S3.ObjectData.Key, record.AWSRegion);
+            return (record.S3.ObjectData.Key, record.AWSRegion);
         }
 
 
@@ -30,15 +30,8 @@ namespace Lambda.S3
             public string AWSRegion { get; set; }
             public class S3Data
             {
-                [JsonPropertyName("bucket")]
-                public Bucket ObjectsBucket { get; set; }
                 [JsonPropertyName("object")]
                 public StoredObject ObjectData { get; set; }
-                public class Bucket
-                {
-                    [JsonPropertyName("name")]
-                    public string Name { get; set; }
-                }
                 public class StoredObject
                 {
                     [JsonPropertyName("key")]

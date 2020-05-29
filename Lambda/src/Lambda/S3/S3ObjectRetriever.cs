@@ -12,13 +12,12 @@ namespace Lambda.S3
 {
     class S3ObjectRetriever
     {
-        private readonly string bucketName;
+        private readonly string accessPoint = Environment.GetEnvironmentVariable("S3ACCESSPOINT");
         private readonly string keyName;
         private static IAmazonS3 client;
 
-        public S3ObjectRetriever(string bucketName, string keyName, RegionEndpoint bucketRegion)
+        public S3ObjectRetriever(string keyName, RegionEndpoint bucketRegion)
         {
-            this.bucketName = bucketName;
             this.keyName = keyName;
             client = new AmazonS3Client(bucketRegion);
         }
@@ -27,19 +26,14 @@ namespace Lambda.S3
         {
             GetObjectRequest request = new GetObjectRequest
             {
-                BucketName = bucketName,
+                BucketName = accessPoint,
                 Key = keyName
             };
             using GetObjectResponse response = await client.GetObjectAsync(request).ConfigureAwait(false);
             using Stream responseStream = response.ResponseStream;
             using StreamReader reader = new StreamReader(responseStream);
-            List<string> res = new List<string>();
             while (!reader.EndOfStream)
-                res.Add(reader.ReadLine());
-            foreach(var el in res)
-            {
-                yield return el;
-            }
+                yield return reader.ReadLine();
         }
     }
 }
