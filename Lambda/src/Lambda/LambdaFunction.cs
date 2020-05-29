@@ -25,11 +25,7 @@ namespace Lambda
         /// <param name="context"></param>
         [SuppressMessage("Style", "IDE0060:Remove unused parameter",
             Justification = "Necesarry for lambda to work")]
-        public void FunctionHandler(S3NotificationEvent input, ILambdaContext context)
-        {
-            HandlerAsync(input).Wait();
-        }
-        private async Task HandlerAsync(S3NotificationEvent input)
+        public async Task FunctionHandler(S3NotificationEvent input, ILambdaContext context)
         {
             var data = input?.GetFileData();
             var retriever = new S3ObjectRetriever(data.Value.objectsKey,
