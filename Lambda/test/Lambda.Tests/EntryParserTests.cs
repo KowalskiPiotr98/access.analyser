@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Xunit;
 using Lambda.Models;
 using System.Collections;
+using Lambda.Parsing;
 
 namespace Lambda.Tests
 {
