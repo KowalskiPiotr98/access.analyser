@@ -15,7 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lambda.Tests", "Lambda\test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormationTemplates", "CloudFormationTemplates", "{8BE54E0E-7018-4265-BB30-E50489479115}"
 	ProjectSection(SolutionItems) = preProject
-		developmentDatabase.template = developmentDatabase.template
+		templates\database.template = templates\database.template
+		templates\developmentDatabase.template = templates\developmentDatabase.template
+		templates\s3lambda.template = templates\s3lambda.template
+		templates\vpc.template = templates\vpc.template
 	EndProjectSection
 EndProject
 Global
