@@ -1,0 +1,122 @@
+{
+    "Description" : "This template launches database layer for access.analyser project.",
+    "Parameters"  : {
+        "DBUsername" : {
+            "Description" : "Master username for DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "[a-zA-Z]\\w*",
+            "MinLength"      : "1",
+            "MaxLength"      : "16"
+        },
+        "DBPassword" : {
+            "Description" : "Master password for DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "\\w+",
+            "MinLength"      : "8",
+            "MaxLength"      : "128",
+            "NoEcho"         : "True"
+        },
+        "NetworkStackName" : {
+            "Description" : "Name of an active CloudFormation stack that contains the networking resources such as VPC and subnet that will be used in this stack",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-vpc"
+        }
+    },
+    "Resources"   : {
+        "Database" : {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties" : {
+                "Engine" : "postgres",
+                "MasterUsername" : {
+                    "Ref" : "DBUsername"
+                },
+                "MasterUserPassword" : {
+                    "Ref" : "DBPassword"
+                },
+                "DBName" : "accessanalyser",
+                "DBInstanceClass"    : "db.t2.micro",
+                "AllocatedStorage"   : "20",
+                "BackupRetentionPeriod" : "7",
+                "MultiAZ" : true,
+                "DBSubnetGroupName" : "DBSubnetGroup",
+                "VPCSecurityGroups"      : [
+                    {
+                        "Ref" : "DBSecurityGroup"
+                    }
+                ],
+                "Tags"                : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser Database"
+                    }
+                ]
+            }
+        },
+        "DbSubnetGroup": {
+            "Type": "AWS::RDS::DBSubnetGroup",
+            "Properties": {
+                "DBSubnetGroupName" : "DBSubnetGroup",
+                "DBSubnetGroupDescription" : "Subnet group for database",
+                "SubnetIds" : [
+                    { "Fn::ImportValue": { "Fn::Sub": "${NetworkStackName}-PrivateSubnet1" } },
+                    { "Fn::ImportValue": { "Fn::Sub": "${NetworkStackName}-PrivateSubnet2" } }
+                ],
+                "Tags"                : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser Db Subnet Group"
+                    }
+                ]
+            }
+        },
+        "DBSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "db-sg",
+                "SecurityGroupIngress" : [
+                    {
+                        "CidrIp" : "10.0.0.0/24",
+                        "FromPort" : 5432,
+                        "ToPort" : 5432,
+                        "IpProtocol" : "tcp"
+                    },
+                    {
+                        "CidrIp" : "10.0.1.0/24",
+                        "FromPort" : 5432,
+                        "ToPort" : 5432,
+                        "IpProtocol" : "tcp"
+                    }
+                ],
+                "GroupDescription"       : "Security group for database",
+                "VpcId": { "Fn::ImportValue": { "Fn::Sub": "${NetworkStackName}-VPCID" } },
+                "Tags"                : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser DB VPC Security group"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs"     : {
+        "DatabaseEndpoint" : {
+            "Value" : {
+                "Fn::GetAtt" : [
+                    "Database",
+                    "Endpoint.Address"
+                ]
+            }
+        },
+        "DatabasePort"     : {
+            "Value" : {
+                "Fn::GetAtt" : [
+                    "Database",
+                    "Endpoint.Port"
+                ]
+            }
+        }
+    }
+}
