@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormationTemplates", "
 	ProjectSection(SolutionItems) = preProject
 		database.template = database.template
 		developmentDatabase.template = developmentDatabase.template
-		s3.template = s3.template
+		s3lambda.template = s3lambda.template
 		vpc.template = vpc.template
 	EndProjectSection
 EndProject

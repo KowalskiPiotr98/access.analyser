@@ -23,6 +23,14 @@
             "MaxLength"   : 255,
             "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
             "Default"        : "access-analyser-vpc"
+        },
+        "DatabaseName": {
+            "Description": "Name of the database to create on the instance",
+            "Type": "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 64,
+            "AllowedPattern" : "^[a-zA-Z][_a-zA-Z0-9]*$",
+            "Default": "accessanalyser"
         }
     },
     "Resources"   : {
@@ -36,7 +44,7 @@
                 "MasterUserPassword" : {
                     "Ref" : "DBPassword"
                 },
-                "DBName" : "accessanalyser",
+                "DBName" : {"Ref":"DatabaseName"},
                 "DBInstanceClass"    : "db.t2.micro",
                 "AllocatedStorage"   : "20",
                 "BackupRetentionPeriod" : "7",
@@ -103,19 +111,40 @@
     },
     "Outputs"     : {
         "DatabaseEndpoint" : {
+            "Description" : "Endpoint allowing to connect to instance",
             "Value" : {
                 "Fn::GetAtt" : [
                     "Database",
                     "Endpoint.Address"
                 ]
+            },
+            "Export"      : {
+                "Name" : {
+                    "Fn::Sub" : "${AWS::StackName}-Endpoint"
+                }
             }
         },
         "DatabasePort"     : {
+            "Description" : "Port allowing to connect to instance",
             "Value" : {
                 "Fn::GetAtt" : [
                     "Database",
                     "Endpoint.Port"
                 ]
+            },
+            "Export"      : {
+                "Name" : {
+                    "Fn::Sub" : "${AWS::StackName}-Port"
+                }
+            }
+        },
+        "DatabaseName": {
+            "Description" : "Name of initially created database",
+            "Value" : { "Ref": "DatabaseName"},
+            "Export"      : {
+                "Name" : {
+                    "Fn::Sub" : "${AWS::StackName}-DBName"
+                }
             }
         }
     }
