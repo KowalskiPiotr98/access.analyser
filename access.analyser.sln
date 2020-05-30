@@ -16,6 +16,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormationTemplates", "CloudFormationTemplates", "{8BE54E0E-7018-4265-BB30-E50489479115}"
 	ProjectSection(SolutionItems) = preProject
 		developmentDatabase.template = developmentDatabase.template
+		vpc.template = vpc.template
 	EndProjectSection
 EndProject
 Global
