@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -61,7 +62,7 @@ namespace access.analyser.Models
             _ = await client.DeleteObjectAsync (delObject);
         }
 
-        internal virtual async Task<FileStreamResult> GetFileStream (string bucketName)
+        internal virtual async Task<FileStreamResult> GetDownloadFileStream (string bucketName)
         {
             using var client = new AmazonS3Client (region);
             var getObject = new GetObjectRequest ()
@@ -81,7 +82,26 @@ namespace access.analyser.Models
             {
                 return null;
             }
+        }
 
+        /// <summary>
+        /// Upload a file to S3 bucket
+        /// </summary>
+        /// <param name="bucketName">S3 bucket name from appsettings.json</param>
+        /// <param name="fileStream">File stream from IFormFile</param>
+        /// <returns>True if file uploaded correctly, false otherwise</returns>
+        /// <exception cref="AmazonS3Exception">Throws when file upload failes</exception>
+        internal virtual async Task<bool> UploadFile (string bucketName, Stream fileStream)
+        {
+            using var client = new AmazonS3Client (region);
+            var sendObject = new PutObjectRequest ()
+            {
+                BucketName = bucketName,
+                Key = S3ObjectKey,
+                InputStream = fileStream
+            };
+            var response = await client.PutObjectAsync (sendObject);
+            return response.HttpStatusCode == System.Net.HttpStatusCode.OK;
         }
     }
 }
