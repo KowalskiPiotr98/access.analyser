@@ -116,7 +116,7 @@ namespace access.analyser.Controllers
         {
             //TODO: if (file is null)...
             //TODO: upewnić się że plik ma rozszerzenie .log i że nie jest nierozsądnie duży
-            var logCount = context.Logs.Count (l => l.UploadDate.Date == DateTime.Today && l.UserId == User.FindFirstValue (ClaimTypes.NameIdentifier));
+            var logCount = context.Logs.Count (l => l.UploadDate.Date == DateTime.Today && l.UserId == User.FindFirstValue (ClaimTypes.NameIdentifier)) + 1;
             var l = new Log ()
             {
                 UserId = User.FindFirstValue (ClaimTypes.NameIdentifier),
