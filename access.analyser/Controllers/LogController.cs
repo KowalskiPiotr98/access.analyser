@@ -1,15 +1,19 @@
 ﻿using access.analyser.Data;
 using access.analyser.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace access.analyser.Controllers
 {
+    [Authorize]
     public class LogController : Controller
     {
         private readonly ApplicationDbContext context;
@@ -95,12 +99,35 @@ namespace access.analyser.Controllers
             {
                 return NotFound ();
             }
-            var ret = await log.GetFileStream (config.GetConnectionString ("S3BucketName"));
+            var ret = await log.GetDownloadFileStream (config.GetConnectionString ("S3BucketName"));
             if (ret is null)
             {
                 return NotFound ();
             }
             return ret;
+        }
+
+        [HttpGet]
+        public IActionResult Upload () => View ();
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Upload (IFormFile file)
+        {
+            //TODO: if (file is null)...
+            //TODO: upewnić się że plik ma rozszerzenie .log i że nie jest nierozsądnie duży
+            var logCount = context.Logs.Count (l => l.UploadDate.Date == DateTime.Today && l.UserId == User.FindFirstValue (ClaimTypes.NameIdentifier));
+            var l = new Log ()
+            {
+                UserId = User.FindFirstValue (ClaimTypes.NameIdentifier),
+                UploadDate = DateTime.Today,
+                S3ObjectKey = $"{User.FindFirstValue (ClaimTypes.NameIdentifier)}-{DateTime.Today.ToString ("dd.MM.yyyy")}-{logCount}.log"
+            };
+            context.Logs.Add (l);
+            await context.SaveChangesAsync ();
+            await l.UploadFile (config.GetConnectionString ("S3BucketName"), file.OpenReadStream ());
+            //TODO: w reakcji na zwrócenie z UploadFile false albo złapanie wyjątku rzuconego w tej metodzie, log powinien zostać usunięty z bazy a user dostać info o błędzie.
+            return RedirectToAction (nameof (Index));
         }
     }
 }

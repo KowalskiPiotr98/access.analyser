@@ -1,0 +1,19 @@
+﻿
+@{
+    ViewData["Title"] = "Upload";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Upload</h1>
+
+<form method="post" asp-antiforgery="true" enctype="multipart/form-data" asp-action="Upload">
+    <dl>
+        <dt>
+            <label for="file">Log</label>
+        </dt>
+        <dd>
+            <input type="file" id="file" name="file">
+        </dd>
+    </dl>
+    <input type="submit" class="btn btn-primary" value="Upload"/>
+</form>
