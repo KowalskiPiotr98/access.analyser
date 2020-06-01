@@ -51,7 +51,7 @@ namespace access.analyser.Controllers
             {
                 return NotFound ();
             }
-            if (!User.IsInRole ("Admin") && User.FindFirstValue (ClaimTypes.NameIdentifier) == log.UserId)
+            if (!User.IsInRole ("Admin") && User.FindFirstValue (ClaimTypes.NameIdentifier) != log.UserId)
             {
                 return NotFound ();
             }
@@ -71,7 +71,7 @@ namespace access.analyser.Controllers
             {
                 return NotFound ();
             }
-            if (!User.IsInRole ("Admin") && User.FindFirstValue (ClaimTypes.NameIdentifier) == log.UserId)
+            if (!User.IsInRole ("Admin") && User.FindFirstValue (ClaimTypes.NameIdentifier) != log.UserId)
             {
                 return NotFound ();
             }

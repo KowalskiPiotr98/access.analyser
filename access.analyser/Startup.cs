@@ -38,7 +38,7 @@ namespace access.analyser
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure (IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure (IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context)
         {
             if (env.IsDevelopment ())
             {
@@ -67,6 +67,8 @@ namespace access.analyser
                  endpoints.MapRazorPages ();
              });
 
+            context.Database.Migrate ();
+
             //Ensure Admin role is created on startup
             using var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory> ().CreateScope ();
             using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>> ();
@@ -76,6 +78,25 @@ namespace access.analyser
                 if (!roleResult.Succeeded)
                 {
                     throw new InvalidOperationException ("Unable to create role.");
+                }
+            }
+
+            //Add default user if there is no admin
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>> ();
+            var admins = userManager.GetUsersInRoleAsync ("Admin").Result;
+            if (admins.Count == 0)
+            {
+                var adminUser = new IdentityUser () { UserName = "admin@example.com", Email = "admin@example.com" };
+                var res = userManager.CreateAsync (adminUser, "1qazXSW@").Result;
+                if (!res.Succeeded)
+                {
+                    throw new InvalidOperationException ("Cannot create admin user");
+                }
+                adminUser = userManager.FindByNameAsync ("admin@example.com").Result;
+                res = userManager.AddToRoleAsync (adminUser, "Admin").Result;
+                if (!res.Succeeded)
+                {
+                    throw new InvalidOperationException ("Cannot create admin user");
                 }
             }
         }
