@@ -81,7 +81,7 @@ namespace access.analyser
                 }
             }
 
-            //Add default user
+            //Add default user if there is no admin
             using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>> ();
             var admins = userManager.GetUsersInRoleAsync ("Admin").Result;
             if (admins.Count == 0)
