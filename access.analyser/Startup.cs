@@ -80,6 +80,25 @@ namespace access.analyser
                     throw new InvalidOperationException ("Unable to create role.");
                 }
             }
+
+            //Add default user
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>> ();
+            var admins = userManager.GetUsersInRoleAsync ("Admin").Result;
+            if (admins.Count == 0)
+            {
+                var adminUser = new IdentityUser () { UserName = "admin@example.com", Email = "admin@example.com" };
+                var res = userManager.CreateAsync (adminUser, "1qazXSW@").Result;
+                if (!res.Succeeded)
+                {
+                    throw new InvalidOperationException ("Cannot create admin user");
+                }
+                adminUser = userManager.FindByNameAsync ("admin@example.com").Result;
+                res = userManager.AddToRoleAsync (adminUser, "Admin").Result;
+                if (!res.Succeeded)
+                {
+                    throw new InvalidOperationException ("Cannot create admin user");
+                }
+            }
         }
     }
 }
