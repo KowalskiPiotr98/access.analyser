@@ -1,3 +1,3 @@
 #!/bin/bash
 
-killall -q -9 dotnet &>/dev/null
+killall -q -9 dotnet || true
