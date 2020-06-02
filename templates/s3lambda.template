@@ -133,10 +133,9 @@
                         {
                             "Effect" : "Allow",
                             "Principal" : "*",
-                            "Action"    : "*",
+                            "Action"    : ["s3:Get*", "s3:List*"],
                             "Resource"  : [
-                                "arn:aws:s3:::*.amazonaws.com",
-                                "arn:aws:s3:::*.amazonaws.com/*"
+                                "arn:aws:s3:::*"
                             ]
                         }
                     ]
