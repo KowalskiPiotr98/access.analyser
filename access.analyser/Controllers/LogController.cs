@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -112,20 +113,30 @@ namespace access.analyser.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Upload (IFormFile file)
+        public async Task<IActionResult> Upload (List<IFormFile> files)
         {
-            //TODO: if (file is null)...
-            //TODO: upewnić się że plik ma rozszerzenie .log i że nie jest nierozsądnie duży
-            var logCount = context.Logs.Count (l => l.UploadDate.Date == DateTime.Today && l.UserId == User.FindFirstValue (ClaimTypes.NameIdentifier)) + 1;
-            var l = new Log ()
+            foreach (var file in files)
             {
-                UserId = User.FindFirstValue (ClaimTypes.NameIdentifier),
-                UploadDate = DateTime.Today,
-                S3ObjectKey = $"{User.FindFirstValue (ClaimTypes.NameIdentifier)}-{DateTime.Today.ToString ("dd.MM.yyyy")}-{logCount}.log"
-            };
-            context.Logs.Add (l);
-            await context.SaveChangesAsync ();
-            await l.UploadFile (config.GetConnectionString ("S3BucketName"), file.OpenReadStream ());
+                if (Path.GetExtension(file.FileName) != ".log")
+                {
+                    continue;//jakis blad dodac?
+                }
+
+                if (file.Length > 1024*1024*5)//5MB
+                {
+                    continue;//jakis blad dodac?
+                }
+                var logCount = context.Logs.Count (l => l.UploadDate.Date == DateTime.Now && l.UserId == User.FindFirstValue (ClaimTypes.NameIdentifier)) + 1;
+                var l = new Log ()
+                {
+                    UserId = User.FindFirstValue (ClaimTypes.NameIdentifier),
+                    UploadDate = DateTime.Now,
+                    S3ObjectKey = $"{User.FindFirstValue (ClaimTypes.NameIdentifier)}-{DateTime.Now.ToString ("dd.MM.yyyy")}-{logCount}.log"
+                };
+                context.Logs.Add (l);
+                context.SaveChanges ();
+                await l.UploadFile(config.GetConnectionString("S3BucketName"), file.OpenReadStream());
+            }
             //TODO: w reakcji na zwrócenie z UploadFile false albo złapanie wyjątku rzuconego w tej metodzie, log powinien zostać usunięty z bazy a user dostać info o błędzie.
             return RedirectToAction (nameof (Index));
         }
