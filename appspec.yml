@@ -4,5 +4,26 @@ os: linux
 #deploys access.analyser project in aws code deploy
 
 files:
-  - source: /
+  - source: access.analyser/bin/Release/netcoreapp3.1/publish
     destination: /home/ec2-user/accessanalyserapp
+  - source: scripts/virtualhost.conf
+    destination: /home/ec2-user/accessanalyserapp
+  - source: scripts/kestrel-aspnetcoreapp.service
+    destination: /etc/systemd/system
+hooks:
+  AfterInstall:
+  - location: scripts/make_appsettings.sh
+    timeout: 300
+    runas: root
+  ApplicationStart:
+  - location: scripts/start_app.sh
+    timeout: 300
+    runas: root
+  ApplicationStop:
+  - location: scripts/stop_app.sh
+    timeout: 300
+    runas: root
+  BeforeInstall:
+  - location: scripts/remove_application.sh
+    timeout: 300
+    runas: root

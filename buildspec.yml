@@ -55,8 +55,9 @@ artifacts:
   files:
      - access.analyser/bin/Release/netcoreapp3.1/publish/*
      - appspec.yml
+     - scripts/**/*
   #name: $(date +%Y-%m-%d)
-  discard-paths: yes
+  #discard-paths: yes
   #base-directory: location
 #cache:
   #paths:
