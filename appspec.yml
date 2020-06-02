@@ -4,5 +4,5 @@ os: linux
 #deploys access.analyser project in aws code deploy
 
 files:
-  - source: ./*
+  - source: /
     destination: /home/ec2-user/accessanalyserapp
