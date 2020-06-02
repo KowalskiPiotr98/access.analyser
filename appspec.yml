@@ -6,10 +6,6 @@ os: linux
 files:
   - source: access.analyser/bin/Release/netcoreapp3.1/publish
     destination: /home/ec2-user/accessanalyserapp
-  - source: scripts/virtualhost.conf
-    destination: /home/ec2-user/accessanalyserapp
-  - source: scripts/kestrel-aspnetcoreapp.service
-    destination: /etc/systemd/system
 hooks:
   AfterInstall:
   - location: scripts/make_appsettings.sh
