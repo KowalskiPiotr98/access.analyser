@@ -1,3 +1,3 @@
 #!/bin/bash
 
-killall -9 dotnet
+killall -q -9 dotnet;echo a
