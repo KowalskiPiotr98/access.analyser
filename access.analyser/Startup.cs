@@ -33,6 +33,8 @@ namespace access.analyser
             services.AddDefaultIdentity<IdentityUser> ()
                 .AddRoles<IdentityRole> ()
                 .AddEntityFrameworkStores<ApplicationDbContext> ();
+            services.AddDataProtection()
+                .PersistKeysToAWSSystemsManager("/MyApplication/DataProtection");
             services.AddControllersWithViews ();
             services.AddRazorPages ();
         }
