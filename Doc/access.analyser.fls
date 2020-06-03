@@ -1,0 +1,103 @@
+PWD c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc
+INPUT e:/texlive/2019/texmf.cnf
+INPUT e:/texlive/2019/texmf-dist/web2c/texmf.cnf
+INPUT e:/texlive/2019/texmf-var/web2c/pdftex/pdflatex.fmt
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.tex
+OUTPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.log
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/article.cls
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/article.cls
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/size12.clo
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/size12.clo
+INPUT e:/texlive/2019/texmf-dist/fonts/map/fontname/texfonts.map
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
+INPUT e:/texlive/2019/texmf-dist/tex/latex/geometry/geometry.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/geometry/geometry.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/inputenc.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/inputenc.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel/babel.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel/babel.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel/switch.def
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel-polish/polish.ldf
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel-polish/polish.ldf
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel/babel.def
+INPUT e:/texlive/2019/texmf-dist/tex/generic/babel/txtbabel.def
+INPUT e:/texlive/2019/texmf-dist/tex/latex/polski/polski.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/polski/polski.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/polski/ot4cmr.fd
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/ot4enc.def
+INPUT e:/texlive/2019/texmf-dist/tex/latex/polski/ot4cmr.fd
+INPUT e:/texlive/2019/texmf-dist/tex/latex/polski/ot4cmr.fd
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plr12.tfm
+INPUT e:/texlive/2019/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/graphics.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/graphics.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics-def/pdftex.def
+INPUT e:/texlive/2019/texmf-dist/tex/latex/graphics-def/pdftex.def
+INPUT e:/texlive/2019/texmf-dist/tex/latex/caption/caption.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/caption/caption.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/caption/caption3.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/caption/caption3.sty
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.aux
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.aux
+OUTPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.aux
+INPUT e:/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+INPUT e:/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/grfext.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/grfext.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+INPUT e:/texlive/2019/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+INPUT e:/texlive/2019/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plr17.tfm
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plbx12.tfm
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plr17.tfm
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plbx12.tfm
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d1.png
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d1.png
+OUTPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.pdf
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d1.png
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d2.png
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d2.png
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/d2.png
+INPUT e:/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
+INPUT e:/texlive/2019/texmf-dist/tex/latex/base/omscmr.fd
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plr12.tfm
+INPUT e:/texlive/2019/texmf-dist/fonts/tfm/public/pl/plbx12.tfm
+INPUT c:/Users/Piotr Kowalski/source/repos/access.analyser/Doc/access.analyser.aux
+INPUT e:/texlive/2019/texmf-dist/fonts/enc/dvips/pl/plrm.enc
+INPUT e:/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb
+INPUT e:/texlive/2019/texmf-dist/fonts/type1/public/pl/plbx12.pfb
+INPUT e:/texlive/2019/texmf-dist/fonts/type1/public/pl/plr12.pfb
