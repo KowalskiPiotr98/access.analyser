@@ -1,0 +1,327 @@
+{
+    "Description" : "This template launches EC2 layer for access.analyser project.",
+    "Parameters"  : {
+        "NetworkStackName" : {
+            "Description" : "Name of an active CloudFormation stack that contains the networking resources such as VPC and subnet that will be used in this stack",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-vpc"
+        },
+        "DatabaseStackName" : {
+            "Description" : "Name of an active CloudFormation stack that creates the database that EC2 instances will use.",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-db"
+        },
+        "S3StackName"       : {
+            "Description" : "Name of an active CloudFormation stack that creates the S3 bucket that EC2 instances will use.",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-s3"
+        },
+        "KeyName"           : {
+            "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instance",
+            "Type"        : "AWS::EC2::KeyPair::KeyName",
+            "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+        },
+        "InstanceType"      : {
+            "Description" : "WebServer EC2 instance type",
+            "Type"        : "String",
+            "Default"     : "t2.micro",
+            "AllowedValues" : [
+                "t1.micro",
+                "t2.nano",
+                "t2.micro",
+                "t2.small",
+                "t2.medium",
+                "t2.large"
+            ],
+            "ConstraintDescription" : "must be a valid EC2 instance type."
+        },
+        "SSHLocation"       : {
+            "Description" : "The IP address range that can be used to SSH to the EC2 instances",
+            "Type"        : "String",
+            "MinLength"   : "9",
+            "MaxLength"   : "18",
+            "Default"     : "0.0.0.0/0",
+            "AllowedPattern" : "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription" : "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "DBUsername"        : {
+            "Description" : "Username with which to connect to DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "[a-zA-Z]\\w*",
+            "MinLength"      : "1",
+            "MaxLength"      : "16"
+        },
+        "DBPassword"        : {
+            "Description" : "Password with which to connect to DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "\\w+",
+            "MinLength"      : "8",
+            "MaxLength"      : "128",
+            "NoEcho"         : "True"
+        }
+    },
+    "Resources"   : {
+        "EC2SecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "SSH and Web access to EC2 instance",
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort"   : "22",
+                        "ToPort"     : "22",
+                        "CidrIp"     : {
+                            "Ref" : "SSHLocation"
+                        },
+                        "Description" : "Enable SSH access via port 22"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort"   : "5000",
+                        "ToPort"     : "5001",
+                        "SourceSecurityGroupId" : {
+                            "Ref" : "ALBSecurityGroup"
+                        },
+                        "Description"           : "Enable access to web application"
+                    }
+                ],
+                "VpcId" : {
+                    "Fn::ImportValue":{"Fn::Sub":"${NetworkStackName}-VPCID"}
+                }
+            }
+        },
+        "LaunchConfig"     : {
+            "Type" : "AWS::AutoScaling::LaunchConfiguration",
+            "Metadata" : {
+                "AWS::CloudFormation::Init" : {
+                    "configSets" : {
+                        "Install" : [
+                            "Install"
+                        ]
+                    },
+                    "Install"    : {
+                        "commands" : {
+                            "01getDotnet" : {
+                                "command" : "sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm && sudo yum update && sudo yum install aspnetcore-runtime-3.1"
+                            },
+                            "02getCodeDeployAgent" : {
+                                "command" : "sudo yum update && sudo yum install ruby && wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install && chmod +x ./install && sudo ./install auto",
+                                "cwd"     : "/home/ec2-user"
+                            }
+                        },
+                        "files"    : {
+                            "/home/ec2-user/appsettings.json" : {
+                                "content" : {
+                                    "Fn::Join" : [
+                                        "",
+                                        [
+                                            "{",
+                                            "\"ConnectionStrings\": {",
+                                            "\"DefaultConnection\": \"Server=",
+                                            {
+                                                "Fn::ImportValue" : {
+                                                    "Fn::Sub" : "${DatabaseStackName}-Endpoint"
+                                                }
+                                            },
+                                            ";Port=5432;Database=",
+                                            {
+                                                "Fn::ImportValue" : {
+                                                    "Fn::Sub" : "${DatabaseStackName}-DBName"
+                                                }
+                                            },
+                                            ";User Id=",
+                                            {
+                                                "Ref" : "DBUsername"
+                                            },
+                                            ";Password=",
+                                            {
+                                                "Ref" : "DBPassword"
+                                            },
+                                            ";\",",
+                                            "\"S3Bucket\":\"",
+                                            {
+                                                "Fn::ImportValue" : {
+                                                    "Fn::Sub" : "${S3StackName}-BucketName"
+                                                }
+                                            },
+                                            "\"",
+                                            "},",
+                                            ":\"Logging\": {",
+                                            "\"LogLevel\": {",
+                                            "\"Default\": \"Information\"",
+                                            "\"Microsoft\": \"Warning\",",
+                                            "\"Microsoft.Hosting.Lifetime\": \"Information\"",
+                                            "}",
+                                            "},",
+                                            "\"AllowedHosts\": \"*\"",
+                                            "}"
+                                        ]
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "Properties" : {
+                "InstanceType" : {
+                    "Ref" : "InstanceType"
+                },
+                "SecurityGroups" : [
+                    {
+                        "Ref" : "EC2SecurityGroup"
+                    }
+                ],
+                "KeyName"        : {
+                    "Ref" : "KeyName"
+                },
+                "ImageId"        : "ami-09d95fab7fff3776c",
+                "UserData"       : {
+                    "Fn::Base64" : {
+                        "Fn::Join" : [
+                            "",
+                            [
+                                "#!/bin/bash -xe\n",
+                                "yum install -y aws-cfn-bootstrap\n",
+                                "/opt/aws/bin/cfn-init -v ",
+                                "         --stack ",
+                                {
+                                    "Ref" : "AWS::StackName"
+                                },
+                                "         --resource EC2Instance ",
+                                "         --configsets Install ",
+                                "         --region ",
+                                {
+                                    "Ref" : "AWS::Region"
+                                },
+                                "\n"
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "WebServerGroup"   : {
+            "Type" : "AWS::AutoScaling::AutoScalingGroup",
+            "Properties" : {
+                "VPCZoneIdentifier" : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet1"
+                        }
+                    },
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet2"
+                        }
+                    }
+                ],
+                "LaunchConfigurationName" : {
+                    "Ref" : "LaunchConfig"
+                },
+                "MinSize"                 : "2",
+                "MaxSize"                 : "2",
+                "TargetGroupARNs"         : [
+                    {
+                        "Ref" : "ALBTargetGroup"
+                    }
+                ]
+            },
+            "CreationPolicy" : {
+                "ResourceSignal" : {
+                    "Timeout" : "PT15M"
+                }
+            },
+            "UpdatePolicy"   : {
+                "AutoScalingRollingUpdate" : {
+                    "MinInstancesInService" : "1",
+                    "MaxBatchSize"          : "1",
+                    "PauseTime"             : "PT15M",
+                    "WaitOnResourceSignals" : "true"
+                }
+            }
+        },
+        "ApplicationLoadBalancer" : {
+            "Type" : "AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "Properties" : {
+                "Subnets" : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet1"
+                        }
+                    },
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet2"
+                        }
+                    }
+                ],
+                "SecurityGroups" : [{"Fn::GetAtt":["ALBSecurityGroup","GroupId"]}]
+            }
+        },
+        "ALBListener"             : {
+            "Type" : "AWS::ElasticLoadBalancingV2::Listener",
+            "Properties" : {
+                "DefaultActions" : [
+                    {
+                        "Type" : "forward",
+                        "TargetGroupArn" : {
+                            "Ref" : "ALBTargetGroup"
+                        }
+                    }
+                ],
+                "LoadBalancerArn" : {
+                    "Ref" : "ApplicationLoadBalancer"
+                },
+                "Port"            : "80",
+                "Protocol"        : "HTTP"
+            }
+        },
+        "ALBTargetGroup"          : {
+            "Type" : "AWS::ElasticLoadBalancingV2::TargetGroup",
+            "Properties" : {
+                "HealthCheckIntervalSeconds" : 30,
+                "HealthCheckTimeoutSeconds"  : 5,
+                "HealthyThresholdCount"      : 3,
+                "Port"                       : 5000,
+                "Protocol"                   : "HTTP",
+                "UnhealthyThresholdCount"    : 5,
+                "VpcId"                      : {
+                    "Fn::ImportValue":{"Fn::Sub":"${NetworkStackName}-VPCID"}
+                }
+            }
+        },
+        "ALBSecurityGroup": {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupDescription" : "Web access to load balancer",
+                "SecurityGroupIngress" : [
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort"   : "80",
+                        "ToPort"     : "80",
+                        "CidrIp" : "0.0.0.0/0"
+                    },
+                    {
+                        "IpProtocol" : "tcp",
+                        "FromPort"   : "80",
+                        "ToPort"     : "80",
+                        "CidrIpv6" : "::/0"
+                    }
+                ],
+                "VpcId" : {
+                    "Fn::ImportValue":{"Fn::Sub":"${NetworkStackName}-VPCID"}
+                }
+            }
+        }
+    }
+}
