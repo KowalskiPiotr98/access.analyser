@@ -169,7 +169,7 @@
                                                 "Ref" : "DBPassword"
                                             },
                                             ";\",",
-                                            "\"S3Bucket\":\"",
+                                            "\"S3BucketName\":\"",
                                             {
                                                 "Fn::ImportValue" : {
                                                     "Fn::Sub" : "${S3StackName}-BucketName"
