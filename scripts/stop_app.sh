@@ -1,3 +1,6 @@
 #!/bin/bash
 
-if pgrep dotnet; then pkill dotnet; fi
+if pgrep "dotnet";then
+	echo "dotnet process found killing"
+	pkill "dotnet";
+fi
