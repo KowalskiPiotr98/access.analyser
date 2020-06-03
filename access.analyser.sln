@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "access.analyser", "access.a
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "UnitTests\UnitTests.csproj", "{DDC625C1-DA1F-459A-8F40-5019FC61C5B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{CBC86241-AB54-47EA-9E8E-165D99DCE05D}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lambda", "Lambda\src\Lambda\Lambda.csproj", "{18E57BE2-F082-466D-B1D0-202A98A0A766}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lambda.Tests", "Lambda\test\Lambda.Tests\Lambda.Tests.csproj", "{FF9173B8-F6B7-4D0F-97DB-184CD8D398C1}"
@@ -35,10 +33,6 @@ Global
 		{DDC625C1-DA1F-459A-8F40-5019FC61C5B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDC625C1-DA1F-459A-8F40-5019FC61C5B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDC625C1-DA1F-459A-8F40-5019FC61C5B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CBC86241-AB54-47EA-9E8E-165D99DCE05D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CBC86241-AB54-47EA-9E8E-165D99DCE05D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CBC86241-AB54-47EA-9E8E-165D99DCE05D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CBC86241-AB54-47EA-9E8E-165D99DCE05D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{18E57BE2-F082-466D-B1D0-202A98A0A766}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{18E57BE2-F082-466D-B1D0-202A98A0A766}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{18E57BE2-F082-466D-B1D0-202A98A0A766}.Release|Any CPU.ActiveCfg = Release|Any CPU
