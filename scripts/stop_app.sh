@@ -1,3 +1,3 @@
 #!/bin/bash
 
-killall -q -9 dotnet || true
+if pgrep dotnet; then pkill dotnet; fi
