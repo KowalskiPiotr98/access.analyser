@@ -27,6 +27,7 @@ namespace access.analyser.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index(DateTime? uploadedOn)
         {
             var roles = await _roleManager.Roles.ToListAsync();
