@@ -31,7 +31,7 @@ namespace access.analyser.Controllers
         {
             var list = from l in context.Logs select l;
             list = Log.GetAuthorisedLogs (list, User.FindFirstValue (ClaimTypes.NameIdentifier), User.IsInRole ("Admin"));
-            list = list.Include (l => l.LogEntries).Select (l => l);
+            list = list.Include (l => l.LogEntries).OrderByDescending (l => l.UploadDate).Select (l => l);
             if (uploadedOn.HasValue)
             {
                 list = Log.SelectByDate (list, uploadedOn.Value);
