@@ -53,7 +53,7 @@ phases:
     #file-format: JunitXml | CucumberJson
 artifacts:
   files:
-     - access.analyser/bin/Release/netcoreapp3.1/publish/*
+     - access.analyser/bin/Release/netcoreapp3.1/publish/**/*
      - appspec.yml
      - scripts/**/*
   #name: $(date +%Y-%m-%d)
