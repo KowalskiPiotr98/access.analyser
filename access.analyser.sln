@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{D2EF1250-5A8D-4223-A218-BC01F537F93F}"
 	ProjectSection(SolutionItems) = preProject
-		scripts\make_appsettings.sh = scripts\make_appsettings.sh
+		scripts\remove_application.sh = scripts\remove_application.sh
 		scripts\start_app.sh = scripts\start_app.sh
 		scripts\stop_app.sh = scripts\stop_app.sh
 	EndProjectSection
