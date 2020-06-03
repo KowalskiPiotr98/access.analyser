@@ -7,10 +7,6 @@ files:
   - source: access.analyser/bin/Release/netcoreapp3.1/publish
     destination: /home/ec2-user/accessanalyserapp
 hooks:
-  AfterInstall:
-  - location: scripts/make_appsettings.sh
-    timeout: 300
-    runas: root
   ApplicationStart:
   - location: scripts/start_app.sh
     timeout: 300
