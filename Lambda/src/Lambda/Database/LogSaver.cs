@@ -50,6 +50,7 @@ namespace Lambda.Database
             command.Parameters.Add("@RawEntry", NpgsqlTypes.NpgsqlDbType.Text);
             await foreach (var entry in entries)
             {
+                if (entry == null) { Console.WriteLine("Invalid entry"); continue; }
                 command.Parameters["@Id"].NpgsqlValue = Guid.NewGuid().ToString();
                 command.Parameters["@LogId"].NpgsqlValue = logId;
                 command.Parameters["@ClientIp"].NpgsqlValue = entry.ClientIp;
