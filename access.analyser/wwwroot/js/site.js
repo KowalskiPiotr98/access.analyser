@@ -11,4 +11,5 @@ function getFileData(myFile) {
         if (i != myFile.files.length - 1)
             label.innerHTML += ", ";
     }
+    document.getElementById("uploadConfirm").removeAttribute('disabled');
 }

@@ -1,7 +1,6 @@
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=xxx.xxx.xxx.xxx;Port=5432;Database=<name>;User Id=<name>;Password=<pass>;",
-    "S3BucketUrl": "https://my-bucket.s3.us-west-2.amazonaws.com/",
     "S3BucketName": "my-bucket"
   },
   "Logging": {
