@@ -21,6 +21,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CloudFormationTemplates", "
 		templates\vpc.template = templates\vpc.template
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2FA879FC-DADA-41A0-9ED8-2DCDA954667B}"
+	ProjectSection(SolutionItems) = preProject
+		appspec.yml = appspec.yml
+		buildspec.yml = buildspec.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scripts", "scripts", "{D2EF1250-5A8D-4223-A218-BC01F537F93F}"
+	ProjectSection(SolutionItems) = preProject
+		scripts\remove_application.sh = scripts\remove_application.sh
+		scripts\start_app.sh = scripts\start_app.sh
+		scripts\stop_app.sh = scripts\stop_app.sh
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

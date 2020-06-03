@@ -102,6 +102,13 @@
         "S3Endpoint"  : {
             "Type" : "AWS::EC2::VPCEndpoint",
             "Properties" : {
+                "RouteTableIds" : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicRouteTable"
+                        }
+                    }
+                ],
                 "PolicyDocument" : {
                     "Statement" : [
                         {
@@ -121,6 +128,14 @@
                                         ]
                                     ]
                                 }
+                            ]
+                        },
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : "*",
+                            "Action"    : ["s3:Get*", "s3:List*"],
+                            "Resource"  : [
+                                "arn:aws:s3:::*"
                             ]
                         }
                     ]
