@@ -35,17 +35,49 @@ namespace access.analyser.Controllers
 
             foreach (var user in _userManager.Users)
             {
-                users.Add(new AdminPanel { Id = user.Id, Username = user.NormalizedUserName, Role = "User" });
+                users.Add(new AdminPanel { Id = user.Id, Username = user.UserName, Role = "User" });
             }
             foreach (var role in roles)
             {
                 var usersInRole = await _userManager.GetUsersInRoleAsync(role.Name);
                 for (int i=0; i < usersInRole.Count; i++)
                 {
-                    users[users.FindIndex(ind => ind.Username.Equals(usersInRole[i].NormalizedUserName))]= new AdminPanel { Id = usersInRole[i].Id, Username = usersInRole[i].NormalizedUserName, Role = role.Name };
+                    users[users.FindIndex(ind => ind.Username.Equals(usersInRole[i].UserName))]= new AdminPanel { Id = usersInRole[i].Id, Username = usersInRole[i].UserName, Role = role.Name };
                 }
             }
             return View(users);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(string id)
+        {
+            if (id is null)
+            {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            await _userManager.DeleteAsync(user);
+            return RedirectToAction(nameof(Index));
         }
 
     }
