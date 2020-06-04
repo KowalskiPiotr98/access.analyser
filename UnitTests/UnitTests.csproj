@@ -21,8 +21,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\access.analyser\access.analyser.csproj" />
-  </ItemGroup>
-
 </Project>
