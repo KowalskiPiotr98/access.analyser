@@ -7,8 +7,8 @@
 
 <h1>Admin Panel: All Users</h1>
 
-<div class="row">
-    <table class="table">
+<div class="table-responsive">
+    <table id="dtBasicExample" class="table table-striped table-bordered" width="100%">
         <thead>
             <tr>
                 <th>
@@ -31,7 +31,8 @@
                         @Html.DisplayFor(modelItem => item.Role)
                     </td>
                     <td>
-                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        <a asp-action="Permission" asp-route-id="@item.Id">Change Permission</a>
                     </td>
                 </tr>
             }

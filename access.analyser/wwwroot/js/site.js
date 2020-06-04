@@ -13,3 +13,14 @@ function getFileData(myFile) {
     }
     document.getElementById("uploadConfirm").removeAttribute('disabled');
 }
+
+$(document).ready(function () {
+    $('#dtBasicExample').DataTable({
+        "aaSorting": [],
+        columnDefs: [{
+            orderable: false,
+            targets: 2
+        }]
+    });
+    $('.dataTables_length').addClass('bs-select');
+});

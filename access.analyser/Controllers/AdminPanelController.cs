@@ -80,5 +80,37 @@ namespace access.analyser.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Permission(string id)
+        {
+            ;
+            if (id is null)
+            {
+                return NotFound();
+            }
+            var user = await _userManager.FindByIdAsync(id);
+            if (user is null)
+            {
+                return NotFound();
+            }
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Permission")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePermission(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            ;
+            if (await _userManager.IsInRoleAsync(user, "Admin"))
+            {
+                await _userManager.RemoveFromRoleAsync(user, "Admin");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, "Admin");
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
