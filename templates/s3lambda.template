@@ -49,6 +49,17 @@
             "Type"        : "String",
             "MinLength"   : 3,
             "MaxLength"   : 63
+        },
+        "AdminEmail"        : {
+            "Description" : "Email adress of applications administrator. If user sends more than X files a day, notification about it will be sent to that email address. You will need to confirm this address.",
+            "Type"        : "String",
+            "MinLength"   : 3,
+            "MaxLength"   : 255
+        },
+        "NotificationThreshold" : {
+            "Description" : "Amount of files uploaded one day that will cause a notification to be sent to administrator.",
+            "Type"        : "Number",
+            "MinValue"    : "1"
         }
     },
     "Resources"   : {
@@ -84,7 +95,7 @@
                 }
             }
         },
-        "S3Endpoint"  : {
+        "S3Endpoint" : {
             "Type" : "AWS::EC2::VPCEndpoint",
             "Properties" : {
                 "RouteTableIds" : [
@@ -118,7 +129,10 @@
                         {
                             "Effect" : "Allow",
                             "Principal" : "*",
-                            "Action"    : ["s3:Get*", "s3:List*"],
+                            "Action"    : [
+                                "s3:Get*",
+                                "s3:List*"
+                            ],
                             "Resource"  : [
                                 "arn:aws:s3:::*"
                             ]
@@ -135,7 +149,7 @@
                 }
             }
         },
-        "Function"    : {
+        "Function"   : {
             "Type" : "AWS::Lambda::Function",
             "Properties" : {
                 "Code" : {
@@ -159,13 +173,20 @@
                                 "Fn::Sub" : "${DatabaseStackName}-Endpoint"
                             }
                         },
-                        "S3ACCESSPOINT" : { "Ref": "AppsS3BucketName"
+                        "S3ACCESSPOINT" : {
+                            "Ref" : "AppsS3BucketName"
                         },
                         "USER"          : {
                             "Ref" : "DBUsername"
                         },
                         "PASSWORD"      : {
                             "Ref" : "DBPassword"
+                        },
+                        "LOGLIMIT"      : {
+                            "Ref" : "NotificationThreshold"
+                        },
+                        "TOPICARN"      : {
+                            "Ref" : "SNSTopic"
                         }
                     }
                 },
@@ -177,7 +198,7 @@
                     ]
                 },
                 "Runtime"     : "dotnetcore3.1",
-                "Timeout"     : 30,
+                "Timeout"     : 60,
                 "VpcConfig"   : {
                     "SubnetIds" : [
                         {
@@ -217,7 +238,8 @@
                 },
                 "ManagedPolicyArns"        : [
                     "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
-                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+                    "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
                 ],
                 "Tags"                     : [
                     {
@@ -263,12 +285,158 @@
                     "Fn::Sub" : "arn:aws:s3:::${AppsS3BucketName}"
                 }
             }
+        },
+        "SNSTopic"              : {
+            "Type" : "AWS::SNS::Topic",
+            "Properties" : {
+                "DisplayName" : "Too much logs",
+                "Subscription" : [
+                    {
+                        "Protocol" : "email",
+                        "Endpoint" : {
+                            "Ref" : "AdminEmail"
+                        }
+                    }
+                ]
+            }
+        },
+        "SNSTopicPolicy"        : {
+            "Type" : "AWS::SNS::TopicPolicy",
+            "Properties" : {
+                "Topics" : [
+                    {
+                        "Ref" : "SNSTopic"
+                    }
+                ],
+                "PolicyDocument" : {
+                    "Version" : "2008-10-17",
+                    "Id"      : "__default_policy_ID",
+                    "Statement" : [
+                        {
+                            "Sid" : "__default_statement_ID",
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "AWS" : "*"
+                            },
+                            "Action"    : [
+                                "SNS:Publish",
+                                "SNS:RemovePermission",
+                                "SNS:SetTopicAttributes",
+                                "SNS:DeleteTopic",
+                                "SNS:ListSubscriptionsByTopic",
+                                "SNS:GetTopicAttributes",
+                                "SNS:Receive",
+                                "SNS:AddPermission",
+                                "SNS:Subscribe"
+                            ],
+                            "Resource"  : {
+                                "Ref" : "SNSTopic"
+                            },
+                            "Condition" : {
+                                "StringEquals" : {
+                                    "AWS:SourceOwner" : {
+                                        "Ref" : "AWS::AccountId"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Sid" : "__console_pub_0",
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "AWS" : "*"
+                            },
+                            "Action"    : "SNS:Publish",
+                            "Resource"  : {
+                                "Ref" : "SNSTopic"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "SNSEndpoint"           : {
+            "Type" : "AWS::EC2::VPCEndpoint",
+            "Properties" : {
+                "PolicyDocument" : {
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : "*",
+                            "Action"    : "*",
+                            "Resource"  : "*"
+                        }
+                    ]
+                },
+                "ServiceName"    : {
+                    "Fn::Sub" : "com.amazonaws.${AWS::Region}.sns"
+                },
+                "VpcId"          : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                },
+                "SecurityGroupIds" : [
+                    {
+                        "Fn::GetAtt" : [
+                            "SNSEndpointSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "SubnetIds"        : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet1"
+                        }
+                    },
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet2"
+                        }
+                    }
+                ],
+                "VpcEndpointType"  : "Interface",
+                "PrivateDnsEnabled" : true
+            }
+        },
+        "SNSEndpointSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "sns-endpoint-sg",
+                "GroupDescription" : "Security group for SNS VPC endpoint",
+                "VpcId"            : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                },
+                "SecurityGroupIngress" : [
+                    {
+                        "SourceSecurityGroupId" : {
+                            "Fn::GetAtt" : [
+                                "FunctionSecurityGroup",
+                                "GroupId"
+                            ]
+                        },
+                        "IpProtocol"            : "tcp",
+                        "FromPort"              : "1",
+                        "ToPort"                : "65535"
+                    }
+                ],
+                "Tags"                 : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser SNS VPC endpoint Security group"
+                    }
+                ]
+            }
         }
     },
     "Outputs"     : {
         "S3BucketName" : {
             "Description" : "Name of created S3 bucket",
-            "Value"       : { "Ref": "AppsS3BucketName"
+            "Value"       : {
+                "Ref" : "AppsS3BucketName"
             },
             "Export"      : {
                 "Name" : {
