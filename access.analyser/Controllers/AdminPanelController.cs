@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace access.analyser.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class AdminPanelController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
@@ -27,8 +28,7 @@ namespace access.analyser.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Index(DateTime? uploadedOn)
+        public async Task<IActionResult> Index()
         {
             var roles = await _roleManager.Roles.ToListAsync();
             var users = new List<AdminPanel>();
@@ -83,7 +83,6 @@ namespace access.analyser.Controllers
         [HttpGet]
         public async Task<IActionResult> Permission(string id)
         {
-            ;
             if (id is null)
             {
                 return NotFound();
@@ -101,7 +100,6 @@ namespace access.analyser.Controllers
         public async Task<IActionResult> ChangePermission(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
-            ;
             if (await _userManager.IsInRoleAsync(user, "Admin"))
             {
                 await _userManager.RemoveFromRoleAsync(user, "Admin");
