@@ -10,6 +10,7 @@ using Lambda.Models;
 using Lambda.Parsing;
 using Lambda.Database;
 using System.Linq;
+using Lambda.SNS;
 
 // Assembly attribute to enable the Lambda function's JSON input to be converted into a .NET class.
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -39,6 +40,8 @@ namespace Lambda
                 var entries = retriever.GetObjectDataAsync().Select(
                     logLine => EntryParser.ProcessLogLine(logLine));
                 await logSaver.SaveLogsAsync(logId, entries).ConfigureAwait(false);
+                if (NotificationSender.IsNotificationNecessary(data.Value.objectsKey))
+                    await NotificationSender.TryPublishNotification(data.Value.objectsKey).ConfigureAwait(false);
             }
             else
             {
