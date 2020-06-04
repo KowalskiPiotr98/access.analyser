@@ -134,7 +134,7 @@ namespace access.analyser.Controllers
             {
                 UserId = User.FindFirstValue (ClaimTypes.NameIdentifier),
                 UploadDate = DateTime.Now,
-                S3ObjectKey = $"{User.FindFirstValue (ClaimTypes.NameIdentifier)}-{DateTime.Today:dd.MM.yyyy}-{logCount}.log"
+                S3ObjectKey = $"{logCount}-{User.FindFirstValue (ClaimTypes.NameIdentifier)}-{DateTime.Today:dd.MM.yyyy}.log"
             };
             context.Logs.Add (l);
             context.SaveChanges ();
