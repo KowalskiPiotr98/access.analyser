@@ -51,6 +51,14 @@
         Aplikacja nie udostępnia żadnego publicznego API.
         Jedyny dostęp do aplikacji zapewniony jest przez stronę internetową.
     \section{Instrukcja postawienia na AWS}
+        Aby uruchomić aplikację na AWS należy po kolei stworzyć stack korzystając z plików template:
+        \begin{enumerate}
+            \item VPC
+            \item Database, podając odpowiednio hasło i użytkownika bazy danych oraz podając nazwę stosu podaną w poprzednim kroku
+            \item S3Labmda, podając odpowiednie wartości parametrów, korzystając z wcześniej podanych wartości
+            \item EC2, podając odpowiednie wartości
+        \end{enumerate}
+        Po starcie, do aplikacji będzie można zalogować się na tymczasowym koncie administratora dostępnym pod danymi logowania admin@example.com 1qazXSW@.
     \section{Podsumowanie}
         Największym problemem w trakcie realizacji projektu okazały się ograniczenia konta AWS Educate.
         Niemożliwe okazało się testowanie programu na prywatnych kubełkach S3, a także współpraca w ramach jednego wspólnego VPC.
