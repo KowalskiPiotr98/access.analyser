@@ -1,0 +1,21 @@
+version: 0.0
+os: linux
+
+#deploys access.analyser project in aws code deploy
+
+files:
+  - source: access.analyser/bin/Release/netcoreapp3.1/publish
+    destination: /home/ec2-user/accessanalyserapp
+hooks:
+  ApplicationStart:
+  - location: scripts/start_app.sh
+    timeout: 300
+    runas: root
+  ApplicationStop:
+  - location: scripts/stop_app.sh
+    timeout: 300
+    runas: root
+  BeforeInstall:
+  - location: scripts/remove_application.sh
+    timeout: 300
+    runas: root

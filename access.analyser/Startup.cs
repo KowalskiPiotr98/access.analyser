@@ -12,6 +12,7 @@ using access.analyser.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace access.analyser
 {
@@ -30,6 +31,8 @@ namespace access.analyser
             services.AddDbContext<ApplicationDbContext> (options =>
                  options.UseNpgsql (
                      Configuration.GetConnectionString ("DefaultConnection")));
+            services.AddDataProtection ()
+                .PersistKeysToDbContext<ApplicationDbContext> ();
             services.AddDefaultIdentity<IdentityUser> ()
                 .AddRoles<IdentityRole> ()
                 .AddEntityFrameworkStores<ApplicationDbContext> ();

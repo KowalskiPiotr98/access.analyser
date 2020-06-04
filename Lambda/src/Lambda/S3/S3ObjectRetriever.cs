@@ -29,7 +29,9 @@ namespace Lambda.S3
                 BucketName = accessPoint,
                 Key = keyName
             };
+            Console.WriteLine($"Start of s3 request {accessPoint}, {keyName}");
             using GetObjectResponse response = await client.GetObjectAsync(request).ConfigureAwait(false);
+            Console.WriteLine("End of s3 request");
             using Stream responseStream = response.ResponseStream;
             using StreamReader reader = new StreamReader(responseStream);
             while (!reader.EndOfStream)
