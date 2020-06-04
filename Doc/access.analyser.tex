@@ -51,14 +51,22 @@
         Aplikacja nie udostępnia żadnego publicznego API.
         Jedyny dostęp do aplikacji zapewniony jest przez stronę internetową.
     \section{Instrukcja postawienia na AWS}
-        Aby uruchomić aplikację na AWS należy po kolei stworzyć stack korzystając z plików template:
-        \begin{enumerate}
+        Aby uruchomić aplikację na AWS należy:
+	\begin{enumerate}
+          \item Stowrzyć wiaderko w którym zostanie umieszczony zostanie plik Lambda.zip i umieścić tam ten plik
+	  \item Stworzyć Personal Access Token do Githuba, wchodząc do Ustawień swojego konta na Github, klikając Developer Settings $\rightarrow$ Personal Access Tokens $\rightarrow$ Generate New Token.
+	  \\Stworzony token wymaga uprawnienia public\_repo.
+          \\Należy zapisać gdzieś token gdyż będzie trzeba go podać jako parametr jednego z template'ów
+          \item Wygenerować parę klucz wartość dającą dostęp SSH do instancji: Z konsoli aws: Services$\rightarrow$EC2$\rightarrow$Key Pairs z menu po lewej$\rightarrow$Create Key Pair
+	  \item Po kolei stworzyć stack korzystając z plików template:
+          \begin{enumerate}
             \item VPC
             \item Database, podając odpowiednio hasło i użytkownika bazy danych oraz podając nazwę stosu podaną w poprzednim kroku
-            \item S3Labmda, podając odpowiednie wartości parametrów, korzystając z wcześniej podanych wartości
+            \item S3Lambda, podając odpowiednie wartości parametrów, korzystając z wcześniej podanych wartości, utworzonego wcześniej bucketa z kodem Lambdy i utworzonej wcześniej pary klucz wartość
             \item EC2, podając odpowiednie wartości
-        \end{enumerate}
-        Po starcie, do aplikacji będzie można zalogować się na tymczasowym koncie administratora dostępnym pod danymi logowania admin@example.com 1qazXSW@.
+          \end{enumerate}
+       \end{enumerate}
+        Po starcie, do aplikacji będzie można zalogować się poprzez endpoint dostępny w Outputs stosu Ec2 na tymczasowym koncie administratora dostępnym pod danymi logowania admin@example.com 1qazXSW@.
     \section{Podsumowanie}
         Największym problemem w trakcie realizacji projektu okazały się ograniczenia konta AWS Educate.
         Niemożliwe okazało się testowanie programu na prywatnych kubełkach S3, a także współpraca w ramach jednego wspólnego VPC.
