@@ -1,0 +1,448 @@
+{
+    "Description" : "This template creates s3 bucket and lambda for access.analyser project. Lambda and S3 need to be created in the same stack to avoid circular dependency",
+    "Parameters"  : {
+        "NetworkStackName" : {
+            "Description" : "Name of an active CloudFormation stack that contains the networking resources such as VPC and subnet that will be used in this stack",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-vpc"
+        },
+        "DatabaseStackName" : {
+            "Description" : "Name of an active CloudFormation stack that creates the database that created lambda will use.",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 255,
+            "AllowedPattern" : "^[a-zA-Z][-a-zA-Z0-9]*$",
+            "Default"        : "access-analyser-db"
+        },
+        "S3CodeBucket"      : {
+            "Description" : "Name of the bucket in which code for created lambda function resides",
+            "Type"        : "String",
+            "MinLength"   : 3,
+            "MaxLength"   : 63
+        },
+        "S3CodeObjectKey"   : {
+            "Description" : "Name of the object key for file in S3 with lambda function's code",
+            "Type"        : "String",
+            "MinLength"   : 1,
+            "MaxLength"   : 1024
+        },
+        "DBUsername"        : {
+            "Description" : "Username with which to connect to DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "[a-zA-Z]\\w*",
+            "MinLength"      : "1",
+            "MaxLength"      : "16"
+        },
+        "DBPassword"        : {
+            "Description" : "Password with which to connect to DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "\\w+",
+            "MinLength"      : "8",
+            "MaxLength"      : "128",
+            "NoEcho"         : "True"
+        },
+        "AppsS3BucketName"  : {
+            "Description" : "Name of S3 Bucket that will be created and used for the app",
+            "Type"        : "String",
+            "MinLength"   : 3,
+            "MaxLength"   : 63
+        },
+        "AdminEmail"        : {
+            "Description" : "Email adress of applications administrator. If user sends more than X files a day, notification about it will be sent to that email address. You will need to confirm this address.",
+            "Type"        : "String",
+            "MinLength"   : 3,
+            "MaxLength"   : 255
+        },
+        "NotificationThreshold" : {
+            "Description" : "Amount of files uploaded one day that will cause a notification to be sent to administrator.",
+            "Type"        : "Number",
+            "MinValue"    : "1"
+        }
+    },
+    "Resources"   : {
+        "S3Bucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "DependsOn" : "S3LambdaPermission",
+            "Properties" : {
+                "BucketName" : {
+                    "Ref" : "AppsS3BucketName"
+                },
+                "NotificationConfiguration" : {
+                    "LambdaConfigurations" : [
+                        {
+                            "Event" : "s3:ObjectCreated:*",
+                            "Function" : {
+                                "Fn::GetAtt" : [
+                                    "Function",
+                                    "Arn"
+                                ]
+                            },
+                            "Filter"   : {
+                                "S3Key" : {
+                                    "Rules" : [
+                                        {
+                                            "Name" : "suffix",
+                                            "Value" : ".log"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "S3Endpoint" : {
+            "Type" : "AWS::EC2::VPCEndpoint",
+            "Properties" : {
+                "RouteTableIds" : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicRouteTable"
+                        }
+                    }
+                ],
+                "PolicyDocument" : {
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : "*",
+                            "Action"    : "*",
+                            "Resource"  : [
+                                {
+                                    "Fn::Join" : [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref" : "S3Bucket"
+                                            },
+                                            "/*"
+                                        ]
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : "*",
+                            "Action"    : [
+                                "s3:Get*",
+                                "s3:List*"
+                            ],
+                            "Resource"  : [
+                                "arn:aws:s3:::*"
+                            ]
+                        }
+                    ]
+                },
+                "ServiceName"    : {
+                    "Fn::Sub" : "com.amazonaws.${AWS::Region}.s3"
+                },
+                "VpcId"          : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                }
+            }
+        },
+        "Function"   : {
+            "Type" : "AWS::Lambda::Function",
+            "Properties" : {
+                "Code" : {
+                    "S3Bucket" : {
+                        "Ref" : "S3CodeBucket"
+                    },
+                    "S3Key"    : {
+                        "Ref" : "S3CodeObjectKey"
+                    }
+                },
+                "Description" : "Lambda function that processes logs saved to S3 and writes results to DB",
+                "Environment" : {
+                    "Variables" : {
+                        "DATABASE" : {
+                            "Fn::ImportValue" : {
+                                "Fn::Sub" : "${DatabaseStackName}-DBName"
+                            }
+                        },
+                        "DB_ENDPOINT" : {
+                            "Fn::ImportValue" : {
+                                "Fn::Sub" : "${DatabaseStackName}-Endpoint"
+                            }
+                        },
+                        "S3ACCESSPOINT" : {
+                            "Ref" : "AppsS3BucketName"
+                        },
+                        "USER"          : {
+                            "Ref" : "DBUsername"
+                        },
+                        "PASSWORD"      : {
+                            "Ref" : "DBPassword"
+                        },
+                        "LOGLIMIT"      : {
+                            "Ref" : "NotificationThreshold"
+                        },
+                        "TOPICARN"      : {
+                            "Ref" : "SNSTopic"
+                        }
+                    }
+                },
+                "Handler"     : "Lambda::Lambda.LambdaFunction::FunctionHandler",
+                "Role"        : {
+                    "Fn::GetAtt" : [
+                        "FunctionRole",
+                        "Arn"
+                    ]
+                },
+                "Runtime"     : "dotnetcore3.1",
+                "Timeout"     : 60,
+                "VpcConfig"   : {
+                    "SubnetIds" : [
+                        {
+                            "Fn::ImportValue" : {
+                                "Fn::Sub" : "${NetworkStackName}-PublicSubnet1"
+                            }
+                        },
+                        {
+                            "Fn::ImportValue" : {
+                                "Fn::Sub" : "${NetworkStackName}-PublicSubnet2"
+                            }
+                        }
+                    ],
+                    "SecurityGroupIds" : [
+                        {
+                            "Ref" : "FunctionSecurityGroup"
+                        }
+                    ]
+                }
+            }
+        },
+        "FunctionRole" : {
+            "Type" : "AWS::IAM::Role",
+            "Properties" : {
+                "Description" : "IAM role for lambda, allows S3 readonly access and log write access",
+                "AssumeRolePolicyDocument" : {
+                    "Version" : "2012-10-17",
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "Service" : "lambda.amazonaws.com"
+                            },
+                            "Action"    : "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "ManagedPolicyArns"        : [
+                    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+                    "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole",
+                    "arn:aws:iam::aws:policy/AmazonSNSFullAccess"
+                ],
+                "Tags"                     : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "Lambda role"
+                    }
+                ]
+            }
+        },
+        "FunctionSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "lambda-sg",
+                "GroupDescription" : "Security group for lambda",
+                "VpcId"            : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                },
+                "Tags"             : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser Lambda VPC Security group"
+                    }
+                ]
+            }
+        },
+        "S3LambdaPermission"    : {
+            "Type" : "AWS::Lambda::Permission",
+            "Properties" : {
+                "Principal" : "s3.amazonaws.com",
+                "Action"    : "lambda:InvokeFunction",
+                "FunctionName" : {
+                    "Fn::GetAtt" : [
+                        "Function",
+                        "Arn"
+                    ]
+                },
+                "SourceAccount" : {
+                    "Ref" : "AWS::AccountId"
+                },
+                "SourceArn"     : {
+                    "Fn::Sub" : "arn:aws:s3:::${AppsS3BucketName}"
+                }
+            }
+        },
+        "SNSTopic"              : {
+            "Type" : "AWS::SNS::Topic",
+            "Properties" : {
+                "DisplayName" : "Too much logs",
+                "Subscription" : [
+                    {
+                        "Protocol" : "email",
+                        "Endpoint" : {
+                            "Ref" : "AdminEmail"
+                        }
+                    }
+                ]
+            }
+        },
+        "SNSTopicPolicy"        : {
+            "Type" : "AWS::SNS::TopicPolicy",
+            "Properties" : {
+                "Topics" : [
+                    {
+                        "Ref" : "SNSTopic"
+                    }
+                ],
+                "PolicyDocument" : {
+                    "Version" : "2008-10-17",
+                    "Id"      : "__default_policy_ID",
+                    "Statement" : [
+                        {
+                            "Sid" : "__default_statement_ID",
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "AWS" : "*"
+                            },
+                            "Action"    : [
+                                "SNS:Publish",
+                                "SNS:RemovePermission",
+                                "SNS:SetTopicAttributes",
+                                "SNS:DeleteTopic",
+                                "SNS:ListSubscriptionsByTopic",
+                                "SNS:GetTopicAttributes",
+                                "SNS:Receive",
+                                "SNS:AddPermission",
+                                "SNS:Subscribe"
+                            ],
+                            "Resource"  : {
+                                "Ref" : "SNSTopic"
+                            },
+                            "Condition" : {
+                                "StringEquals" : {
+                                    "AWS:SourceOwner" : {
+                                        "Ref" : "AWS::AccountId"
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            "Sid" : "__console_pub_0",
+                            "Effect" : "Allow",
+                            "Principal" : {
+                                "AWS" : "*"
+                            },
+                            "Action"    : "SNS:Publish",
+                            "Resource"  : {
+                                "Ref" : "SNSTopic"
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "SNSEndpoint"           : {
+            "Type" : "AWS::EC2::VPCEndpoint",
+            "Properties" : {
+                "PolicyDocument" : {
+                    "Statement" : [
+                        {
+                            "Effect" : "Allow",
+                            "Principal" : "*",
+                            "Action"    : "*",
+                            "Resource"  : "*"
+                        }
+                    ]
+                },
+                "ServiceName"    : {
+                    "Fn::Sub" : "com.amazonaws.${AWS::Region}.sns"
+                },
+                "VpcId"          : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                },
+                "SecurityGroupIds" : [
+                    {
+                        "Fn::GetAtt" : [
+                            "SNSEndpointSecurityGroup",
+                            "GroupId"
+                        ]
+                    }
+                ],
+                "SubnetIds"        : [
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet1"
+                        }
+                    },
+                    {
+                        "Fn::ImportValue" : {
+                            "Fn::Sub" : "${NetworkStackName}-PublicSubnet2"
+                        }
+                    }
+                ],
+                "VpcEndpointType"  : "Interface",
+                "PrivateDnsEnabled" : true
+            }
+        },
+        "SNSEndpointSecurityGroup" : {
+            "Type" : "AWS::EC2::SecurityGroup",
+            "Properties" : {
+                "GroupName" : "sns-endpoint-sg",
+                "GroupDescription" : "Security group for SNS VPC endpoint",
+                "VpcId"            : {
+                    "Fn::ImportValue" : {
+                        "Fn::Sub" : "${NetworkStackName}-VPCID"
+                    }
+                },
+                "SecurityGroupIngress" : [
+                    {
+                        "SourceSecurityGroupId" : {
+                            "Fn::GetAtt" : [
+                                "FunctionSecurityGroup",
+                                "GroupId"
+                            ]
+                        },
+                        "IpProtocol"            : "tcp",
+                        "FromPort"              : "1",
+                        "ToPort"                : "65535"
+                    }
+                ],
+                "Tags"                 : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "access-analyser SNS VPC endpoint Security group"
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs"     : {
+        "S3BucketName" : {
+            "Description" : "Name of created S3 bucket",
+            "Value"       : {
+                "Ref" : "AppsS3BucketName"
+            },
+            "Export"      : {
+                "Name" : {
+                    "Fn::Sub" : "${AWS::StackName}-BucketName"
+                }
+            }
+        }
+    }
+}

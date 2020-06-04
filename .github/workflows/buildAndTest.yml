@@ -22,7 +22,7 @@ jobs:
       with:
         dotnet-version: 3.1.201
     - name: Install dependencies
-      run: dotnet restore --use-lock-file
+      run: dotnet restore
     - name: Build
       run: dotnet build --no-restore -c Release
     - name: UnitTests

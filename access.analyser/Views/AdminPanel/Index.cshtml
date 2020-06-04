@@ -1,0 +1,41 @@
+﻿@model IEnumerable<access.analyser.Models.AdminPanel>
+
+@{
+    ViewData["Title"] = "Admin Panel - Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Admin Panel: All Users</h1>
+
+<div class="table-responsive">
+    <table id="dtBasicExample" class="table table-striped table-bordered" width="100%">
+        <thead>
+            <tr>
+                <th>
+                    Username
+                </th>
+                <th>
+                    Role
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in @Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Username)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Role)
+                    </td>
+                    <td>
+                        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a> |
+                        <a asp-action="Permission" asp-route-id="@item.Id">Change Permission</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

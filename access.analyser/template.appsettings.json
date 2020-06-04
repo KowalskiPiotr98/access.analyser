@@ -1,6 +1,7 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=xxx.xxx.xxx.xxx;Port=5432;Database=<name>;User Id=<name>;Password=<pass>;"
+    "DefaultConnection": "Server=xxx.xxx.xxx.xxx;Port=5432;Database=<name>;User Id=<name>;Password=<pass>;",
+    "S3BucketName": "my-bucket"
   },
   "Logging": {
     "LogLevel": {

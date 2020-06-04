@@ -1,0 +1,95 @@
+{
+    "Description" : "Stack for creating development DB",
+    "Parameters"  : {
+        "DBUsername" : {
+            "Description" : "Master username for DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "[a-zA-Z]\\w*",
+            "MinLength"      : "1",
+            "MaxLength"      : "16"
+        },
+        "DBPassword" : {
+            "Description" : "Master password for DB instance",
+            "Type"        : "String",
+            "AllowedPattern" : "\\w+",
+            "MinLength"      : "8",
+            "MaxLength"      : "128",
+            "NoEcho"         : "True"
+        },
+        "DBAccessCIDR1" : {
+            "Description" : "CIDR block that can access DB instance (ex. 192.168.0.1/32)",
+            "Type"        : "String"
+        },
+        "DBAccessCIDR2" : {
+            "Description" : "CIDR block that can access DB instance",
+            "Type"        : "String"
+        },
+        "DBAccessCIDR3" : {
+            "Description" : "CIDR block that can access DB instance",
+            "Type"        : "String"
+        }
+    },
+    "Resources"   : {
+        "DevelopmentDB" : {
+            "Type" : "AWS::RDS::DBInstance",
+            "Properties" : {
+                "Engine" : "postgres",
+                "MasterUsername" : {
+                    "Ref" : "DBUsername"
+                },
+                "MasterUserPassword" : {
+                    "Ref" : "DBPassword"
+                },
+                "DBInstanceClass"    : "db.t2.micro",
+                "AllocatedStorage"   : "20",
+                "BackupRetentionPeriod" : "7",
+                "DBSecurityGroups"      : [
+                    {
+                        "Ref" : "DBSecurityGroup"
+                    }
+                ]
+            }
+        },
+        "DBSecurityGroup" : {
+            "Type" : "AWS::RDS::DBSecurityGroup",
+            "Properties" : {
+                "DBSecurityGroupIngress" : [
+                    {
+                        "CIDRIP" : {
+                            "Ref" : "DBAccessCIDR1"
+                        }
+                    },
+                    {
+                        "CIDRIP" : {
+                            "Ref" : "DBAccessCIDR2"
+                        }
+                    },
+                    {
+                        "CIDRIP" : {
+                            "Ref" : "DBAccessCIDR3"
+                        }
+                    }
+                ],
+                "GroupDescription"       : "Security group for dev database"
+            }
+        }
+    },
+    "Outputs"     : {
+        "DatabaseEndpoint" : {
+            "Value" : {
+                "Fn::GetAtt" : [
+                    "DevelopmentDB",
+                    "Endpoint.Address"
+                ]
+            }
+        },
+        "DatabasePort"     : {
+            "Value" : {
+                "Fn::GetAtt" : [
+                    "DevelopmentDB",
+                    "Endpoint.Port"
+                ]
+            }
+        }
+    }
+}
